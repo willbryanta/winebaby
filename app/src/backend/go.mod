@@ -1,4 +1,4 @@
-module github.com/willbryanta/winebaby
+module winebaby
 
 go 1.24.1
 

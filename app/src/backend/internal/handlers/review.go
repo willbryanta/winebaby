@@ -5,8 +5,8 @@ import ("encoding/json"
 "strconv"
 
 "github.com/go-chi/chi/v5"
-"winebaby/models"
-"winebaby/repository")
+"winebaby/internal/models"
+"winebaby/internal/repository")
 
 func CreateReview(w http.ResponseWriter, r *http.Request){
 	var newReview models.Review

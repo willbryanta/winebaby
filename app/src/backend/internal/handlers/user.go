@@ -6,10 +6,14 @@ import (
 )
 
 func SignUp(w http.ResponseWriter, r *http.Request){
-	var user userjson.NewDecoder(r.Body).Decode(&user)
-	w.WriteHeader(http.StatusCreated)
-}
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
 
-func Login(w http.ResponseWriter, r *http.Request){
-	
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(user)
 }
