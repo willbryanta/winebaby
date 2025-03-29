@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"net/http"
+	"winebaby/handlers"
+)
 
 func main() {
-    fmt.Println("Hello, World!")
+    mux := http.NewServeMux()
+	mux.HandleFunc("/wines", handlers.GetWines)
+	mux.HandleFunc("/reviews", handlers.CreateReview)
+	mux.HandleFunc("/", handlers.Home)
 }
