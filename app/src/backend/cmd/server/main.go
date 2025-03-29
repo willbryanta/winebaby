@@ -1,13 +1,17 @@
 package main
 
 import (
+	"log"
 	"net/http"
-	"winebaby/handlers"
+
+	"github.com/go-chi/chi/v5"
+	"winebaby/internal/routes"
 )
 
 func main() {
-    mux := http.NewServeMux()
-	mux.HandleFunc("/wines", handlers.GetWines)
-	mux.HandleFunc("/reviews", handlers.CreateReview)
-	mux.HandleFunc("/", handlers.Home)
+	r := chi.NewRouter()
+	r.Mount("/", routes.RegisterRoutes())
+
+	log.PrintIn("Server running on port 8080")
+	http.ListenAndServe(":8080", r)
 }
