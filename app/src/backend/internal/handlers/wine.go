@@ -5,13 +5,13 @@ import ("encoding/json"
 "winebaby/internal/models")
 
 func GetWines(w http.ResponseWriter, r *http.Request){
-	wines := []Wine{}
+	wines := []models.Wine{}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(wines)
 }
 
 func AddWine(w http.ResponseWriter, r *http.Request){
-	var wine Wine
+	var wine models.Wine
 	if err := json.NewDecoder(r.Body).Decode(&wine); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return

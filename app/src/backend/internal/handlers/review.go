@@ -22,7 +22,7 @@ func GetReviews(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(reviews)
 }
 
-func GetReview(w http.ResponseWriter, r *http.Request){
+func GetReviewById(w http.ResponseWriter, r *http.Request){
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	review := repository.GetReviewById(id)
 	if review == nil {

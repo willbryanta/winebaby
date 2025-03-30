@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"winebaby/internal/repository"
+	"winebaby/internal/models"
 )
 
 func SignUp(w http.ResponseWriter, r *http.Request){

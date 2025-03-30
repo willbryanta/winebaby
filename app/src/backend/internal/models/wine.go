@@ -1,4 +1,4 @@
-package handlers 
+package models
 
 type Wine struct {
 	ID				int 	`json:"id"`
