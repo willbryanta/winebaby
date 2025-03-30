@@ -1,7 +1,8 @@
 package handlers
 
 import ("encoding/json"
-"net/http")
+"net/http"
+"winebaby/internal/models")
 
 func GetWines(w http.ResponseWriter, r *http.Request){
 	wines := []Wine{}

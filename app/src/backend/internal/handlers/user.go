@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"winebaby/internal/repository"
 )
 
 func SignUp(w http.ResponseWriter, r *http.Request){
@@ -11,6 +12,11 @@ func SignUp(w http.ResponseWriter, r *http.Request){
 
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if err := repository.CreateUser(user); err != nil {
+		http.Error(w, "Failed to create new user", http.StatusInternalServerError)
 		return
 	}
 
