@@ -28,18 +28,18 @@ func main() {
 		log.Println("No .env file found, falling back to environment variables")
 	}
 
-	db, err := connectDB()
+	dbConn, err := connectDB()
 	if err != nil {
 		log.Fatal("Error connecting to the database: ", err)
 	}
-	defer db.Close()
+	defer dbConn.Close()
 
-	if err = db.Ping(); err != nil {
+	if err = dbConn.Ping(); err != nil {
 		log.Fatal("Error pinging the database: ", err)
 	}
 	log.Println("Successfully connected to winebaby_db!")
 
-	if err := db.Seed(db); err != nil{
+	if err := db.Seed(dbConn); err != nil{
 		log.Fatal("Error seeding the database", err)
 	}
 
