@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"winebaby/db"
 	"github.com/go-chi/chi/v5"
 	"winebaby/internal/routes"
 	"github.com/joho/godotenv"
@@ -37,6 +38,10 @@ func main() {
 		log.Fatal("Error pinging the database: ", err)
 	}
 	log.Println("Successfully connected to winebaby_db!")
+
+	if err := db.Seed(db); err != nil{
+		log.Fatal("Error seeding the database", err)
+	}
 
 	r := chi.NewRouter()
 	r.Mount("/", routes.RegisterRoutes())
