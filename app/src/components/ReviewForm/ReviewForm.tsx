@@ -23,7 +23,7 @@ export default function ReviewForm() {
   });
 
   const onFormInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.target;
 
@@ -58,24 +58,23 @@ export default function ReviewForm() {
     if (!isFormValid()) {
       alert("Please fill out all fields correctly.");
       return;
+    }
+    try {
+      // Update once the review service has been built
+      const res = await fetch("/api/review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      try {
-        // Update once the review service has been built
-        const res = await fetch("/api/review", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (!res.ok) throw new Error("Failed to submit review");
-        alert("Review submitted successfully!");
-        router.push("/");
-      } catch (err) {
-        console.error("Submission error:, err as unknown");
-        alert("An error occured while submitting your review");
-      }
+      if (!res.ok) throw new Error("Failed to submit review");
+      alert("Review submitted successfully!");
+      router.push("/");
+    } catch (err) {
+      console.error("Submission error:", err as unknown);
+      alert("An error occured while submitting your review");
     }
   };
 
