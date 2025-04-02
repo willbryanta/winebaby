@@ -21,15 +21,13 @@ export default function WineCard({ wineProperties }: WineCardProps) {
   const { WineID, Title, Year, Winemaker, Type, Colour } = wineProperties;
 
   return (
-    <>
-      <div id="wine-card">
-        <Image src={`/filepathplaceholder/${WineID}`} alt={`${Title} image`} />
-        <h2>Title: {Title}</h2>
-        <div>Year: {Year}</div>
-        <div>Winemaker: {Winemaker}</div>
-        <div>Type: {Type}</div>
-        <div>Colour: {Colour}</div>
-      </div>
-    </>
+    <div id="wine-card">
+      <Image src={`/filepathplaceholder/${WineID}`} alt={`${Title} image`} />
+      <h2>Title: {Title}</h2>
+      <div>Year: {Year}</div>
+      <div>Winemaker: {Winemaker}</div>
+      <div>Type: {Type}</div>
+      <div>Colour: {Colour}</div>
+    </div>
   );
 }
