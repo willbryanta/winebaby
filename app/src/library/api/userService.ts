@@ -1,3 +1,5 @@
+import { User } from "next-auth";
+
 interface ProfileResponse {
   data?: string; //Might have to double check whether this is right
   error?: string;
@@ -12,7 +14,7 @@ const BACKEND_URL = import.meta.env.VITE_EXPRESS_BACKEND_URL as
   | undefined;
 const TOKEN_KEY = import.meta.env.VITE_JWT_KEY as string | undefined;
 
-const getProfile = async (user): Promise<ProfileResponse> => {
+const getProfile = async (user: User): Promise<ProfileResponse> => {
   if (!BACKEND_URL) {
     throw new Error("Backend URL is not configured properly");
   }

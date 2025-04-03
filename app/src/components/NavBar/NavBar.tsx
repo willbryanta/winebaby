@@ -7,23 +7,31 @@ export default function NavBar() {
   // const { data: session } = useSession(); uncomment once sessioning has been implemented
   const session = null;
   return (
-    <nav>
-      <ul className="bg-gray-800 text-white p-4 shadow-md">
+    <nav className="bg-gray-800 p-4 shadow-md">
+      <ul className="flex space-x-6 text-white">
         <li>
-          <Link href="/">Home</Link>
+          <Link href="/" className="hover:text-gray-300">
+            Home
+          </Link>
         </li>
         {session ? (
           <>
             <li>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href="/dashboard" className="hover:text-gray-300">
+                Dashboard
+              </Link>
             </li>
             <li>
-              <button onClick={() => signOut()}>Sign out</button>
+              <button onClick={() => signOut()} className="btn">
+                Sign out
+              </button>
             </li>
           </>
         ) : (
           <li>
-            <button onClick={() => signIn()}>Sign in</button>
+            <button onClick={() => signIn()} className="btn">
+              Sign in
+            </button>
           </li>
         )}
       </ul>
