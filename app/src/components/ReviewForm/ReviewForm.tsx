@@ -81,11 +81,15 @@ export default function ReviewForm() {
   //REVIEW - Revisit this, the user shouldn't be passing the title or winemaker of the wine, it should be automatically populated from the DB based on WineID
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-md w-96 space-y-4"
+      >
         <label htmlFor="Winemaker">Winemaker</label>
         <input
           id="Winemaker"
           name="Winemaker"
+          className="input"
           value={formData.Winemaker}
           onChange={onFormInputChange}
           placeholder="Enter Winemaker"
@@ -94,6 +98,7 @@ export default function ReviewForm() {
         <input
           id="Title"
           name="Title"
+          className="input"
           value={formData.Title}
           onChange={onFormInputChange}
           placeholder="Enter Title"
@@ -102,6 +107,7 @@ export default function ReviewForm() {
         <input
           id="Description"
           name="Description"
+          className="input"
           value={formData.Description}
           onChange={onFormInputChange}
           placeholder="Enter Description"
@@ -110,6 +116,7 @@ export default function ReviewForm() {
         <input
           id="Rating"
           name="Rating"
+          className="input"
           value={formData.Rating}
           onChange={onFormInputChange}
           placeholder="Enter Rating"
