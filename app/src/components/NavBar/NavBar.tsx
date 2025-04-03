@@ -4,11 +4,11 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function NavBar() {
-  // const { data: session } = useSession();
+  // const { data: session } = useSession(); uncomment once sessioning has been implemented
   const session = null;
   return (
     <nav>
-      <ul>
+      <ul className="bg-gray-800 text-white p-4 shadow-md">
         <li>
           <Link href="/">Home</Link>
         </li>
