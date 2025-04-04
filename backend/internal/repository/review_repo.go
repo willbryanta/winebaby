@@ -3,7 +3,7 @@ package repository
 import "winebaby/internal/models"
 
 var reviews = []models.Review{
-	{ID: 1, WineID:1, Manufacturer:"Grant Burge", Title: "McClaren Vale 2024", Description: "Zesty and fruity with notes of licorice", Rating: 7},
+	{ID: 1, WineID:1, Winemaker:"Grant Burge", Title: "McClaren Vale 2024", Description: "Zesty and fruity with notes of licorice", Rating: 7},
 }
 
 // Get all reviews
