@@ -1,5 +1,5 @@
 // app/layout.tsx
-import "./globals.css";
+import "./global.css";
 import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({
