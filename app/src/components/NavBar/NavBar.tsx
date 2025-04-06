@@ -4,9 +4,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function NavBar() {
-  // const { data: session } = useSession();
-
-  const session = null;
+  const { data: session, status } = useSession();
 
   return (
     <nav className="bg-wine dark:bg-wine-dark text-white p-4 shadow-md">
@@ -19,7 +17,9 @@ export default function NavBar() {
             Home
           </Link>
         </li>
-        {session ? (
+        {status === "loading" ? (
+          <li>Loading...</li>
+        ) : session ? (
           <>
             <li>
               <Link

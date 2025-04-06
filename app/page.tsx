@@ -1,7 +1,7 @@
 import React from "react";
 import NavBar from "./src/components/NavBar/NavBar";
 
-const HomePage: React.FC = () => {
+export default function HomePage() {
   return (
     <div>
       <h1>Welcome to WineBaby</h1>
@@ -9,6 +9,4 @@ const HomePage: React.FC = () => {
       <NavBar />
     </div>
   );
-};
-
-export default HomePage;
+}
