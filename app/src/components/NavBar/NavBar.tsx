@@ -46,6 +46,12 @@ export default function NavBar() {
             >
               Sign in
             </Link>
+            <Link
+              href="/signup"
+              className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
+            >
+              Sign up
+            </Link>
           </li>
         )}
       </ul>
