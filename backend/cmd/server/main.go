@@ -22,6 +22,17 @@ func connectDB() (*sql.DB, error){
 	return sql.Open("postgres", connStr)
 }
 
+func CORSMiddleware(next http.Handler) http:Handler{
+	return http.HandlerFunc(fun(w http.ResponseWriter, r *http.Request))
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	if r.Method == "OPTIONS" {
+		return
+	}
+	next.ServeHTTP(w, r)
+}
+
 func main() {
 
 	if err := godotenv.Load(); err != nil {
@@ -44,6 +55,7 @@ func main() {
 	}
 
 	r := chi.NewRouter()
+	r.Use(CORSMiddleware)
 	r.Mount("/", routes.RegisterRoutes())
 
 	log.Println("Server running on port 8080")
