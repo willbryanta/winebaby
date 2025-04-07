@@ -9,19 +9,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func SignUp(w http.ResponseWriter, r *http.Request){
+func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.Repository) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
-
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request payload"})
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
 		return
 	}
 
-	if user.Username == "" || user.Password == "" {
+	if user.Username == "" || user.Password == "" || (user.Email != nil && *user.Email == "") {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Username and password are required"})
+		json.NewEncoder(w).Encode(map[string]string{"message": "Username, password, and email are required"})
 		return
 	}
 
@@ -34,10 +33,9 @@ func SignUp(w http.ResponseWriter, r *http.Request){
 	user.Password = string(hashedPassword)
 
 
-	if err := repository.CreateUser(user); err != nil {
+	if err := repo.CreateUser(user); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to create user: " + err.Error()})
-		http.Error(w, "Failed to create new user", http.StatusInternalServerError)
 		return
 	}
 
@@ -45,31 +43,43 @@ func SignUp(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
 }
 
-func SignIn(w http.ResponseWriter, r *http.Request){
+func Login(w http.ResponseWriter, r *http.Request, repo *repository.Repository) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request payload"})
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
 		return
 	}
+
+
 	if user.Username == "" || user.Password == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Username and password are required"})
 		return
 	}
-	storedUser, err := repository.GetUserByUsername(user.Username)
-	if err != nil {	
+
+
+	dbUser, err := repo.GetUserByUsername(user.Username)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to retrieve user"})
+		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to retrieve user: " + err.Error()})
 		return
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password)); err != nil {
+	if dbUser.ID == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
 		return
 	}
+
+
+	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Login successful"})
-
 }
