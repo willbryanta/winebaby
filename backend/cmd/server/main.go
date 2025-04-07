@@ -7,8 +7,9 @@ import (
 	"os"
 
 	"winebaby/db"
-	"github.com/go-chi/chi/v5"
 	"winebaby/internal/routes"
+
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -22,15 +23,21 @@ func connectDB() (*sql.DB, error){
 	return sql.Open("postgres", connStr)
 }
 
-func CORSMiddleware(next http.Handler) http:Handler{
-	return http.HandlerFunc(fun(w http.ResponseWriter, r *http.Request))
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	if r.Method == "OPTIONS" {
-		return
-	}
-	next.ServeHTTP(w, r)
+func CORSMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Set CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func main() {
