@@ -1,16 +1,7 @@
-// app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { NextAuthOptions } from "next-auth";
 
-// Define user type returned by backend
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
-
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -25,16 +16,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         const response = await fetch("http://localhost:8080/api/auth/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username: credentials?.username,
             password: credentials?.password,
           }),
         });
-        const user: User = await response.json();
-
+        const user = await response.json();
         if (response.ok && user) {
           return { id: user.id, name: user.username, email: user.email };
         }
@@ -44,15 +32,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   pages: {
     signIn: "/signin",
+    signOut: "/signout",
   },
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
+      if (user) token.id = user.id;
       return token;
     },
     async session({ session, token }) {
@@ -61,6 +46,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
 
 export { handlers as GET, handlers as POST };

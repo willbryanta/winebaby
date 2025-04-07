@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function NavBar() {
@@ -40,14 +40,12 @@ export default function NavBar() {
           </>
         ) : (
           <li>
-            <button
-              onClick={() =>
-                signIn("credentials", { callbackUrl: "/dashboard" })
-              }
-              className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
+            <Link
+              href="/signin"
+              className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
             >
               Sign in
-            </button>
+            </Link>
           </li>
         )}
       </ul>
