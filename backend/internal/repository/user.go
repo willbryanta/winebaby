@@ -31,7 +31,7 @@ func (r *Repository) GetUserByUsername(username string) (models.User, error) {
 }
 
 func (r *Repository) GetUserProfile(username string) (models.UserProfile, error) {
-	// Fetch user
+
 	userQuery := `SELECT id, username, email FROM users WHERE username = $1`
 	var user models.UserProfile
 	err := r.db.QueryRow(userQuery, username).Scan(&user.ID, &user.Username, &user.Email)
@@ -39,7 +39,6 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 		return models.UserProfile{}, err
 	}
 
-	// Fetch favorite wines (example table: favorite_wines)
 	winesQuery := `SELECT id, name, region FROM favorite_wines WHERE user_id = $1`
 	rows, err := r.db.Query(winesQuery, user.ID)
 	if err != nil {
@@ -66,6 +65,5 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 		}
 		user.Reviews = append(user.Reviews, review)
 	}
-
 	return user, nil
 }
