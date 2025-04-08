@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -40,6 +41,12 @@ func CORSMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+
+	seed := flag.Bool("seed", false, "Seed the database with sample data")
+	flag.Parse()
+	if *seed {
+		log.Println("Seeding the database with sample data...")
+	}
 
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, falling back to environment variables")
