@@ -63,14 +63,23 @@ func main() {
 	}
 	log.Println("Successfully connected to winebaby_db!")
 
-	if err := db.Seed(dbConn); err != nil{
-		log.Fatal("Error seeding the database", err)
+	if *seed {
+		log.Println("Seeding the database with sample data...")
+		if err := db.Seed(dbConn); err != nil {
+			log.Fatal("Error seeding the database: ", err)
+		}
+		log.Println("Database seeded successfully!")
+		return
 	}
 
 	r := chi.NewRouter()
 	r.Use(CORSMiddleware)
+
+
 	r.Mount("/", routes.RegisterRoutes())
 
 	log.Println("Server running on port 8080")
-	http.ListenAndServe(":8080", r)
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatal("Server failed: ", err)
+	}
 }
