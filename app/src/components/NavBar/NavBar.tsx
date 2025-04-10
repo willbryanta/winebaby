@@ -24,7 +24,7 @@ export default function NavBar() {
             <li>
               <Link
                 href="/dashboard"
-                className="hover:text-wine-light transition-colors duration-200"
+                className="hover:text-wine-light transition-colors duration-200 py-2 px-4"
               >
                 Dashboard
               </Link>
@@ -48,7 +48,7 @@ export default function NavBar() {
             </Link>
             <Link
               href="/signup"
-              className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
+              className="hover:text-wine-light transition-colors duration-200 font-semibold py-2 px-4 rounded-md inline-block"
             >
               Sign up
             </Link>
