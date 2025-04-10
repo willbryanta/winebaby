@@ -21,7 +21,12 @@ func connectDB() (*sql.DB, error){
 	os.Getenv("DB_HOST") + ":" +
 	os.Getenv("DB_PORT") + "/" +
 	os.Getenv("DB_NAME") + "?sslmode=disable"
-	return sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal("Error opening database: ", err)
+		return nil, err
+	}
+	return db, nil
 }
 
 func CORSMiddleware(next http.Handler) http.Handler {
@@ -76,7 +81,7 @@ func main() {
 	r.Use(CORSMiddleware)
 
 
-	r.Mount("/", routes.RegisterRoutes())
+	r.Mount("/", routes.RegisterRoutes(dbConn))
 
 	log.Println("Server running on port 8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {

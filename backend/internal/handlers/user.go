@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"winebaby/internal/models"
@@ -9,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.Repository) {
+func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -43,7 +44,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.Repository)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
 }
 
-func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.Repository) {
+func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -84,7 +85,7 @@ func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.Repository)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Login successful"})
 }
 
-func GetUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.Repository) {
+func GetUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
 	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
 	user, err := repo.GetUserProfile(username)
 	if err != nil {

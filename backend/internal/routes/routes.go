@@ -1,40 +1,65 @@
 package routes
 
 import (
+	"database/sql"
 	"net/http"
+
 	"winebaby/internal/handlers"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func RegisterRoutes() *chi.Mux {
+func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r := chi.NewRouter()
 
-	r.Get("/", func(w http.ResponseWriter, r * http.Request){
+	r.Get("/", func(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("Welcome to Winebaby"))
 	})
 
-	r.Get("/wines", handlers.GetWines)
+	r.Get("/wines", func(w http.ResponseWriter, r *http.Request){
+		handlers.GetWines(w, r, db)
+	})
 
-	r.Get("/reviews", handlers.GetReviews)
-	r.Get("/reviews/{id}", handlers.GetReviewById)
-	r.Post("/reviews", handlers.CreateReview)
-	r.Put("/reviews/{id}", handlers.UpdateReview)
-	r.Delete("/reviews/{id}", handlers.DeleteReview)
+	r.Get("/reviews", func(w http.ResponseWriter, r *http.Request){
+		handlers.GetReviews(w, r, db)})
+	r.Get("/reviews/{id}", func(w http.ResponseWriter, r *http.Request){
+		handlers.GetReviewById(w, r, db)})
+	r.Post("/reviews", func(w http.ResponseWriter, r *http.Request){
+		handlers.CreateReview(w, r, db)})
+	r.Put("/reviews/{id}", func(w http.ResponseWriter, r *http.Request){
+		handlers.UpdateReview(w, r, db)})
+	r.Delete("/reviews/{id}", func(w http.ResponseWriter, r *http.Request){
+		handlers.DeleteReview(w,r, db)})
 
-	r.Post("/signup", handlers.SignUp)
-	r.Post("/signin", handlers.SignIn)
-	r.Get("/user/{username}", handlers.GetUserProfile)
-	r.Put("/user/{username}", handlers.UpdateUserProfile)
-	r.Delete("/user/{username}", handlers.DeleteUser)
-	r.Get("/user/{username}/wines", handlers.GetUserFavoriteWines)
-	r.Post("/user/{username}/wines", handlers.AddUserFavoriteWine)
-	r.Delete("/user/{username}/wines/{wineId}", handlers.RemoveUserFavoriteWine)
-	r.Get("/user/{username}/reviews", handlers.GetUserReviews)
-	r.Post("/user/{username}/reviews", handlers.CreateUserReview)
-	r.Put("/user/{username}/reviews/{reviewId}", handlers.UpdateUserReview)
-	r.Delete("/user/{username}/reviews/{reviewId}", handlers.DeleteUserReview)
-	r.Get("/user/{username}/reviews/{reviewId}", handlers.GetUserReviewById)
+	r.Post("/signup", func(w http.ResponseWriter, r *http.Request){
+		handlers.SignUp(w,r,db)})
+	r.Post("/signin", func(w http.ResponseWriter, r *http.Request){
+		handlers.SignIn(w,r,db)})
+
+	r.Get("/user/{username}", func(w http.ResponseWriter, r *http.Request){
+		handlers.GetUserProfile(w,r,db)})
+	r.Put("/user/{username}", func(w http.ResponseWriter, r *http.Request){
+		handlers.UpdateUserProfile(w,r,db)})
+	r.Delete("/user/{username}", func(w http.ResponseWriter, r *http.Request){
+		handlers.DeleteUser(w,r,db)})
+
+		
+	r.Get("/user/{username}/wines", func(w http.ResponseWriter, r *http.Request){
+		handlers.GetUserFavoriteWines(w,r,db)})
+	r.Post("/user/{username}/wines", func(w http.ResponseWriter, r *http.Request){
+		handlers.AddUserFavoriteWine(w,r,db)})
+	r.Delete("/user/{username}/wines/{wineId}", func(w http.ResponseWriter, r *http.Request){
+		handlers.RemoveUserFavoriteWine(w,r,db)})
+	r.Get("/user/{username}/reviews", func(w http.ResponseWriter, r *http.Request){
+		handlers.GetUserReviews(w,r,db)})
+	r.Post("/user/{username}/reviews", func(w http.ResponseWriter, r *http.Request){
+		handlers.CreateUserReview(w, r, db)})
+	r.Put("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
+		handlers.UpdateUserReview(w, r, db)})
+	r.Delete("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
+		handlers.DeleteUserReview(w, r, db)})
+	r.Get("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
+		handlers.GetUserReviewById(w, r, db)})
 
 	return r
 }
