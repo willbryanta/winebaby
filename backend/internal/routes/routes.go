@@ -32,9 +32,9 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 		handlers.DeleteReview(w,r, db)})
 
 	r.Post("/signup", func(w http.ResponseWriter, r *http.Request){
-		handlers.SignUp(w,r,db)})
+		handlers.SignUp(w,r)})
 	r.Post("/signin", func(w http.ResponseWriter, r *http.Request){
-		handlers.SignIn(w,r,db)})
+		handlers.SignIn(w,r)})
 
 	r.Get("/user/{username}", func(w http.ResponseWriter, r *http.Request){
 		handlers.GetUserProfile(w,r,db)})
@@ -43,7 +43,7 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r.Delete("/user/{username}", func(w http.ResponseWriter, r *http.Request){
 		handlers.DeleteUser(w,r,db)})
 
-		
+
 	r.Get("/user/{username}/wines", func(w http.ResponseWriter, r *http.Request){
 		handlers.GetUserFavoriteWines(w,r,db)})
 	r.Post("/user/{username}/wines", func(w http.ResponseWriter, r *http.Request){
