@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 	"winebaby/internal/models"
 	"winebaby/internal/repository"
 
@@ -23,11 +25,49 @@ func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.Repository,
 		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
 		return
 	}
+	
+	user.Username = strings.TrimSpace(user.Username)
+	user.Password = strings.TrimSpace(user.Password)
+	if user.Email != nil {
+		*user.Email = strings.TrimSpace(*user.Email)
+	}
 
 	if user.Username == "" || user.Password == "" || (user.Email != nil && *user.Email == "") {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Username, password, and email are required"})
 		return
+	}
+	if user.Email != nil && *user.Email != "" {
+		if !regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(*user.Email) {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid email format"})
+			return
+		}
+	}
+
+	existingUser, err := repo.GetUserByUsername(user.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to check existing user: " + err.Error()})
+		return
+	}
+	if existingUser.Username != "" {
+		w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Username already exists"})
+		return
+	}
+	if user.Email != nil {
+		existingEmail, err := repo.GetUserByEmail(*user.Email)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to check existing email: " + err.Error()})
+			return
+		}
+		if existingEmail.ID != 0 {
+			w.WriteHeader(http.StatusConflict)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Email already exists"})
+			return
+		}
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -50,44 +90,50 @@ func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.Repository,
 }
 
 func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	var credentials struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&credentials)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
 		return
 	}
 
-
-	if user.Username == "" || user.Password == "" {
+	credentials.Username = strings.TrimSpace(credentials.Username)
+	credentials.Password = strings.TrimSpace(credentials.Password)
+	if credentials.Username == "" || credentials.Password == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Username and password are required"})
 		return
 	}
-
-
-	dbUser, err := repo.GetUserByUsername(user.Username)
+	user, err := repo.GetUserByUsername(credentials.Username)
+	if err != nil {	
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to fetch user: " + err.Error()})
+		return
+	}
+	if user.Username == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
+		return
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
+		return
+	}
+	token, err := GenerateJWT(user.Username)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to retrieve user: " + err.Error()})
+		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to generate token"})
 		return
 	}
-	if dbUser.ID == 0 {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
-		return
-	}
-
-
-	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
-		return
-	}
-
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Login successful"})
+	json.NewEncoder(w).Encode(map[string]string{"token": token})
 }
 
 func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
