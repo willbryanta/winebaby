@@ -32,7 +32,7 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 		handlers.DeleteReview(w,r, db)})
 
 	r.Post("/signup", func(w http.ResponseWriter, r *http.Request){
-		handlers.SignUp(w,r)})
+		handlers.SignUp(w,r, repo, db)})
 	r.Post("/signin", func(w http.ResponseWriter, r *http.Request){
 		handlers.SignIn(w,r)})
 
