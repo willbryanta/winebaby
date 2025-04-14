@@ -13,29 +13,38 @@ func NewRepository(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
 func (r *Repository) SignIn(username, password string) (models.User, error) {
-	query := `SELECT id, username, password, email FROM users WHERE username = $1 AND password = $2`
+	query := `SELECT id, username, email, password FROM users WHERE username = $1 AND password = $2`
 	var user models.User
-	err := r.db.QueryRow(query, username, password).Scan(&user.ID, &user.Username, &user.Password, &user.Email)
+	var email sql.NullString
+	err := r.db.QueryRow(query, username, password).Scan(&user.ID, &user.Username, &email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.User{}, nil
 		}
 		return models.User{}, err
+	}
+	if email.Valid {
+		user.Email = &email.String
 	}
 	return user, nil
 }
+
 func (r *Repository) SignUp(username, password, email string) (models.User, error) {
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id`
 	var user models.User
-	err := r.db.QueryRow(query, username, password, email).Scan(&user.ID)
+	var id int
+	var emailPtr *string
+	if email != "" {
+		emailPtr = &email
+	}
+	err := r.db.QueryRow(query, username, password, emailPtr).Scan(&id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return models.User{}, nil
-		}
 		return models.User{}, err
 	}
+	user.ID = id
 	user.Username = username
 	user.Password = password
+	user.Email = emailPtr
 	return user, nil
 }
 
@@ -44,29 +53,44 @@ func (r *Repository) CreateUser(user models.User) error {
 	err := r.db.QueryRow(query, user.Username, user.Password, user.Email).Scan(&user.ID)
 	return err
 }
+
 func (r *Repository) GetUserByUsername(username string) (models.User, error) {
-	query := `SELECT id, username, password, email FROM users WHERE username = $1`
+	query := `SELECT id, username, email, password FROM users WHERE username = $1`
 	var user models.User
-	err := r.db.QueryRow(query, username).Scan(&user.ID, &user.Username, &user.Password, &user.Email)
+	var email sql.NullString
+	err := r.db.QueryRow(query, username).Scan(&user.ID, &user.Username, &email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.User{}, nil
 		}
 		return models.User{}, err
 	}
+	if email.Valid {
+		user.Email = &email.String
+	}
 	return user, nil
 }
 
 func (r *Repository) GetUserProfile(username string) (models.UserProfile, error) {
-
 	userQuery := `SELECT id, username, email FROM users WHERE username = $1`
 	var user models.UserProfile
-	err := r.db.QueryRow(userQuery, username).Scan(&user.ID, &user.Username, &user.Email)
+	var email sql.NullString
+	err := r.db.QueryRow(userQuery, username).Scan(&user.ID, &user.Username, &email)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.UserProfile{}, nil
+		}
 		return models.UserProfile{}, err
 	}
+	if email.Valid {
+		user.Email = &email.String
+	}
 
-	winesQuery := `SELECT id, name, region FROM favorite_wines WHERE user_id = $1`
+	winesQuery := `SELECT id, name, year, manufacturer, region, alcohol_content, serving_temp, serving_size, 
+                          serving_size_unit, serving_size_unit_abbreviation, serving_size_unit_description, 
+                          serving_size_unit_description_abbreviation, serving_size_unit_description_plural, 
+                          price, rating, type, colour 
+                   FROM favorite_wines WHERE user_id = $1`
 	rows, err := r.db.Query(winesQuery, user.ID)
 	if err != nil {
 		return models.UserProfile{}, err
@@ -74,11 +98,31 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 	defer rows.Close()
 	for rows.Next() {
 		var wine models.Wine
-		if err := rows.Scan(&wine.ID, &wine.Name, &wine.Region); err != nil {
+		err := rows.Scan(
+			&wine.ID,
+			&wine.Name,
+			&wine.Year,
+			&wine.Manufacturer,
+			&wine.Region,
+			&wine.AlcoholContent,
+			&wine.ServingTemp,
+			&wine.ServingSize,
+			&wine.ServingSizeUnit,
+			&wine.ServingSizeUnitAbbreviation,
+			&wine.ServingSizeUnitDescription,
+			&wine.ServingSizeUnitDescriptionAbbreviation,
+			&wine.ServingSizeUnitDescriptionPlural,
+			&wine.Price,
+			&wine.Rating,
+			&wine.Type,
+			&wine.Colour,
+		)
+		if err != nil {
 			return models.UserProfile{}, err
 		}
 		user.FavoriteWines = append(user.FavoriteWines, wine)
 	}
+
 	reviewsQuery := `SELECT id, wine_name, rating, comment FROM reviews WHERE user_id = $1`
 	rows, err = r.db.Query(reviewsQuery, user.ID)
 	if err != nil {
@@ -87,7 +131,8 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 	defer rows.Close()
 	for rows.Next() {
 		var review models.Review
-		if err := rows.Scan(&review.ID, &review.WineName, &review.Rating, &review.Comment); err != nil {
+		err := rows.Scan(&review.ID, &review.WineName, &review.Rating, &review.Comment)
+		if err != nil {
 			return models.UserProfile{}, err
 		}
 		user.Reviews = append(user.Reviews, review)
@@ -96,14 +141,18 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 }
 
 func (r *Repository) GetUserByEmail(email string) (models.User, error) {
-	query := `SELECT id, username, password, email FROM users WHERE email = $1`
+	query := `SELECT id, username, email, password FROM users WHERE email = $1`
 	var user models.User
-	err := r.db.QueryRow(query, email).Scan(&user.ID, &user.Username, &user.Password, &user.Email)
+	var emailVal sql.NullString
+	err := r.db.QueryRow(query, email).Scan(&user.ID, &user.Username, &emailVal, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.User{}, nil
 		}
 		return models.User{}, err
+	}
+	if emailVal.Valid {
+		user.Email = &emailVal.String
 	}
 	return user, nil
 }
@@ -113,6 +162,7 @@ func (r *Repository) UpdateUserProfile(user models.User) error {
 	_, err := r.db.Exec(query, user.Username, user.Email, user.ID)
 	return err
 }
+
 func (r *Repository) DeleteUser(username string) error {
 	query := `DELETE FROM users WHERE username = $1`
 	_, err := r.db.Exec(query, username)
