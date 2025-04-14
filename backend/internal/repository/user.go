@@ -9,9 +9,6 @@ type Repository struct {
 	db *sql.DB
 }
 
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{db: db}
-}
 func (r *Repository) SignIn(username, password string) (models.User, error) {
 	query := `SELECT id, username, email, password FROM users WHERE username = $1 AND password = $2`
 	var user models.User
@@ -123,7 +120,9 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 		user.FavoriteWines = append(user.FavoriteWines, wine)
 	}
 
-	reviewsQuery := `SELECT id, wine_name, rating, comment FROM reviews WHERE user_id = $1`
+	reviewsQuery := `SELECT id, wine_id, winemaker, wine_name, comment, review_date, review_date_time, 
+                            review_date_time_utc, title, description, rating 
+                     FROM reviews WHERE user_id = $1`
 	rows, err = r.db.Query(reviewsQuery, user.ID)
 	if err != nil {
 		return models.UserProfile{}, err
@@ -131,7 +130,19 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 	defer rows.Close()
 	for rows.Next() {
 		var review models.Review
-		err := rows.Scan(&review.ID, &review.WineName, &review.Rating, &review.Comment)
+		err := rows.Scan(
+			&review.ID,
+			&review.WineID,
+			&review.Winemaker,
+			&review.WineName,
+			&review.Comment,
+			&review.ReviewDate,
+			&review.ReviewDateTime,
+			&review.ReviewDateTimeUTC,
+			&review.Title,
+			&review.Description,
+			&review.Rating,
+		)
 		if err != nil {
 			return models.UserProfile{}, err
 		}
@@ -139,7 +150,6 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 	}
 	return user, nil
 }
-
 func (r *Repository) GetUserByEmail(email string) (models.User, error) {
 	query := `SELECT id, username, email, password FROM users WHERE email = $1`
 	var user models.User
