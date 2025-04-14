@@ -307,3 +307,34 @@ func (r *Repository) UpdateUserReview(review models.Review) error {
 		review.ID)
 	return err
 }
+func (r *Repository) DeleteUserReview(reviewID int) error {
+	query := `DELETE FROM reviews WHERE id = $1`
+	_, err := r.db.Exec(query, reviewID)
+	return err
+}
+
+func (r *Repository) GetUserReviewById(reviewID int) (models.Review, error) {
+	query := `SELECT id, wine_id, winemaker, wine_name, comment, review_date, review_date_time, 
+						  review_date_time_utc, title, description, rating 
+				   FROM reviews WHERE id = $1`
+	var review models.Review
+	err := r.db.QueryRow(query, reviewID).Scan(
+		&review.ID,
+		&review.WineID,
+		&review.Winemaker,
+		&review.WineName,
+		&review.Comment,
+		&review.ReviewDate,
+		&review.ReviewDateTime,
+		&review.ReviewDateTimeUTC,
+		&review.Title,
+		&review.Description,
+		&review.Rating)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.Review{}, nil
+		}
+		return models.Review{}, err
+	}
+	return review, nil
+}
