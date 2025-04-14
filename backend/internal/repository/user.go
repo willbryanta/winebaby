@@ -288,3 +288,22 @@ func (r *Repository) CreateUserReview(review models.Review) error {
 		review.Rating).Scan(&review.ID)
 	return err
 }
+
+func (r *Repository) UpdateUserReview(review models.Review) error {
+	query := `UPDATE reviews SET wine_id = $1, winemaker = $2, wine_name = $3, comment = $4, review_date = $5, 
+								  review_date_time = $6, review_date_time_utc = $7, title = $8, description = $9, rating = $10 
+			  WHERE id = $11`
+	_, err := r.db.Exec(query,
+		review.WineID,
+		review.Winemaker,
+		review.WineName,
+		review.Comment,
+		review.ReviewDate,
+		review.ReviewDateTime,
+		review.ReviewDateTimeUTC,
+		review.Title,
+		review.Description,
+		review.Rating,
+		review.ID)
+	return err
+}
