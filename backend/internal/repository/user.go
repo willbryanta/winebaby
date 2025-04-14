@@ -236,3 +236,55 @@ func (r *Repository) RemoveUserFavoriteWine(userID int, wineID int) error {
 	return err
 }
 
+func (r *Repository) GetUserReviews(username string) ([]models.Review, error) {
+	query := `SELECT id, wine_id, winemaker, wine_name, comment, review_date, review_date_time, 
+						  review_date_time_utc, title, description, rating 
+				   FROM reviews WHERE user_id = (SELECT id FROM users WHERE username = $1)`
+	rows, err := r.db.Query(query, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var reviews []models.Review
+	for rows.Next() {
+		var review models.Review
+		err := rows.Scan(
+			&review.ID,
+			&review.WineID,
+			&review.Winemaker,
+			&review.WineName,
+			&review.Comment,
+			&review.ReviewDate,
+			&review.ReviewDateTime,
+			&review.ReviewDateTimeUTC,
+			&review.Title,
+			&review.Description,
+			&review.Rating,
+		)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+	return reviews, nil
+}
+
+func (r *Repository) CreateUserReview(review models.Review) error {
+	query := `INSERT INTO reviews (user_id, wine_id, winemaker, wine_name, comment, review_date, 
+								  review_date_time, review_date_time_utc, title, description, rating) 
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`
+	err := r.db.QueryRow(query,
+		review.UserID,
+		review.WineID,
+		review.Winemaker,
+		review.WineName,
+		review.Comment,
+		review.ReviewDate,
+		review.ReviewDateTime,
+		review.ReviewDateTimeUTC,
+		review.Title,
+		review.Description,
+		review.Rating).Scan(&review.ID)
+	return err
+}

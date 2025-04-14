@@ -229,9 +229,6 @@ func AddUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repositor
 	json.NewEncoder(w).Encode(map[string]string{"message": "Favorite wine added successfully"})
 }
 func RemoveUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
-	wineId := chi.URLParam(r, "wineId") // Extract wine ID from URL
-
 	userID := chi.URLParam(r, "userID") // Extract user ID from URL
 	wineID := chi.URLParam(r, "wineID") // Extract wine ID from URL
 
@@ -278,6 +275,9 @@ func CreateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.R
 		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
 		return
 	}
+	// Review points to user that created the review, not the other way around
+	// Will need to update by appending the review to the user and not the review
+	//TODO: update the review to point to the user that created it and modify
 
 	if err := repo.CreateUserReview(username, review); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
