@@ -36,7 +36,6 @@ func (r *Repository) SignUp(username, password, email string) (models.User, erro
 	}
 	user.Username = username
 	user.Password = password
-	user.Email = email
 	return user, nil
 }
 

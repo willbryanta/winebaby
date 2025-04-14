@@ -7,16 +7,26 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 	"winebaby/internal/models"
 	"winebaby/internal/repository"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var JWTSecret = os.Getenv("JWT_SECRET")
 var JWTExpiration = 3600
+
+func GenerateJWT(username string) (string, error) {
+	claims := jwt.MapClaims{
+		"username": username,
+		"exp":      jwt.NewNumericDate(time.Now().Add(time.Duration(JWTExpiration) * time.Second)),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(JWTSecret))
+}
 
 func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
 	var user models.User
