@@ -178,3 +178,45 @@ func (r *Repository) DeleteUser(username string) error {
 	_, err := r.db.Exec(query, username)
 	return err
 }
+
+func (r *Repository) GetUserFavoriteWines(username string) ([]models.Wine, error) {
+	query := `SELECT id, name, year, manufacturer, region, alcohol_content, serving_temp, serving_size, 
+						  serving_size_unit, serving_size_unit_abbreviation, serving_size_unit_description, 
+						  serving_size_unit_description_abbreviation, serving_size_unit_description_plural, 
+						  price, rating, type, colour 
+				   FROM favorite_wines WHERE user_id = (SELECT id FROM users WHERE username = $1)`
+	rows, err := r.db.Query(query, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var wines []models.Wine
+	for rows.Next() {
+		var wine models.Wine
+		err := rows.Scan(
+			&wine.ID,
+			&wine.Name,
+			&wine.Year,
+			&wine.Manufacturer,
+			&wine.Region,
+			&wine.AlcoholContent,
+			&wine.ServingTemp,
+			&wine.ServingSize,
+			&wine.ServingSizeUnit,
+			&wine.ServingSizeUnitAbbreviation,
+			&wine.ServingSizeUnitDescription,
+			&wine.ServingSizeUnitDescriptionAbbreviation,
+			&wine.ServingSizeUnitDescriptionPlural,
+			&wine.Price,
+			&wine.Rating,
+			&wine.Type,
+			&wine.Colour,
+		)
+		if err != nil {
+			return nil, err
+		}
+		wines = append(wines, wine)
+	}
+	return wines, nil
+}
