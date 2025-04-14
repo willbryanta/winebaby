@@ -220,3 +220,14 @@ func (r *Repository) GetUserFavoriteWines(username string) ([]models.Wine, error
 	}
 	return wines, nil
 }
+
+func AddUserFavoriteWine(r *Repository, userID int, wineID int) error {
+	query := `INSERT INTO favorite_wines (user_id, wine_id) VALUES ($1, $2)`
+	_, err := r.db.Exec(query, userID, wineID)
+	return err
+}
+func RemoveUserFavoriteWine(r *Repository, userID int, wineID int) error {
+	query := `DELETE FROM favorite_wines WHERE user_id = $1 AND wine_id = $2`
+	_, err := r.db.Exec(query, userID, wineID)
+	return err
+}
