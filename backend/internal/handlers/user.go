@@ -148,7 +148,6 @@ func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.Repository,
 }
 
 func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -163,7 +162,7 @@ func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.
 		return
 	}
 
-	if err := repo.UpdateUserProfile(username, user); err != nil {
+	if err := repo.UpdateUserProfile(user); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to update user profile"})
 		return

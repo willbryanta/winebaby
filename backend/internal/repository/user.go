@@ -107,3 +107,14 @@ func (r *Repository) GetUserByEmail(email string) (models.User, error) {
 	}
 	return user, nil
 }
+
+func (r *Repository) UpdateUserProfile(user models.User) error {
+	query := `UPDATE users SET username = $1, email = $2 WHERE id = $3`
+	_, err := r.db.Exec(query, user.Username, user.Email, user.ID)
+	return err
+}
+func (r *Repository) DeleteUser(username string) error {
+	query := `DELETE FROM users WHERE username = $1`
+	_, err := r.db.Exec(query, username)
+	return err
+}
