@@ -232,7 +232,23 @@ func RemoveUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *reposi
 	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
 	wineId := chi.URLParam(r, "wineId") // Extract wine ID from URL
 
-	if err := repo.RemoveUserFavoriteWine(username, wineId); err != nil {
+	userID := chi.URLParam(r, "userID") // Extract user ID from URL
+	wineID := chi.URLParam(r, "wineID") // Extract wine ID from URL
+
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid user ID"})
+		return
+	}
+	wineIDInt, err := strconv.Atoi(wineID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid wine ID"})
+		return
+	}
+
+	if err := repo.RemoveUserFavoriteWine(userIDInt, wineIDInt); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to remove favorite wine"})
 		return
