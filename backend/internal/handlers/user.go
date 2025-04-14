@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 	"winebaby/internal/models"
@@ -195,7 +196,6 @@ func GetUserFavoriteWines(w http.ResponseWriter, r *http.Request, repo *reposito
 	json.NewEncoder(w).Encode(favoriteWines)
 }
 func AddUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
 	var wine models.Wine
 	err := json.NewDecoder(r.Body).Decode(&wine)
 	if err != nil {
@@ -204,7 +204,22 @@ func AddUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repositor
 		return
 	}
 
-	if err := repo.AddUserFavoriteWine(username, wine); err != nil {
+	userID := chi.URLParam(r, "userID") // Extract user ID from URL
+	wineID := chi.URLParam(r, "wineID") // Extract wine ID from URL
+
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid user ID"})
+		return
+	}
+	wineIDInt, err := strconv.Atoi(wineID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid wine ID"})
+		return
+	}
+	if err := repo.AddUserFavoriteWine(userIDInt, wineIDInt); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to add favorite wine"})
 		return
