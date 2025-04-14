@@ -34,7 +34,7 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r.Post("/signup", func(w http.ResponseWriter, r *http.Request){
 		handlers.SignUp(w,r, repo, db)})
 	r.Post("/signin", func(w http.ResponseWriter, r *http.Request){
-		handlers.SignIn(w,r)})
+		handlers.SignIn(w,r, repo, db)})
 
 	r.Get("/user/{username}", func(w http.ResponseWriter, r *http.Request){
 		handlers.GetUserProfile(w,r,db)})

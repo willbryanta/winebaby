@@ -10,6 +10,7 @@ import (
 	"winebaby/internal/models"
 	"winebaby/internal/repository"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
 )

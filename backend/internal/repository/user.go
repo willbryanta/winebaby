@@ -12,6 +12,34 @@ type Repository struct {
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
+func (r *Repository) SignIn(username, password string) (models.User, error) {
+	query := `SELECT id, username, password, email FROM users WHERE username = $1 AND password = $2`
+	var user models.User
+	err := r.db.QueryRow(query, username, password).Scan(&user.ID, &user.Username, &user.Password, &user.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.User{}, nil
+		}
+		return models.User{}, err
+	}
+	return user, nil
+}
+func (r *Repository) SignUp(username, password, email string) (models.User, error) {
+	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id`
+	var user models.User
+	err := r.db.QueryRow(query, username, password, email).Scan(&user.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.User{}, nil
+		}
+		return models.User{}, err
+	}
+	user.Username = username
+	user.Password = password
+	user.Email = email
+	return user, nil
+}
+
 func (r *Repository) CreateUser(user models.User) error {
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id`
 	err := r.db.QueryRow(query, user.Username, user.Password, user.Email).Scan(&user.ID)
@@ -64,6 +92,19 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 			return models.UserProfile{}, err
 		}
 		user.Reviews = append(user.Reviews, review)
+	}
+	return user, nil
+}
+
+func (r *Repository) GetUserByEmail(email string) (models.User, error) {
+	query := `SELECT id, username, password, email FROM users WHERE email = $1`
+	var user models.User
+	err := r.db.QueryRow(query, email).Scan(&user.ID, &user.Username, &user.Password, &user.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.User{}, nil
+		}
+		return models.User{}, err
 	}
 	return user, nil
 }
