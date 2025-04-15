@@ -2,6 +2,7 @@ package models
 
 type Review struct {
 	ID				int 	`json:"id"`
+	UserID			int 	`json:"user_id"`
 	WineID 			int		`json:"wine_id"`
 	Winemaker		string	`json:"winemaker"`
 	WineName		string	`json:"wine_name"`
