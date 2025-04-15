@@ -19,14 +19,13 @@ type Wine struct {
 	Reviews			[]Review	`json:"reviews"`
 	ReviewCount		int		`json:"review_count"`
 	AverageRating	float32	`json:"average_rating"`
-	Review			Review	`json:"review"`
 	Type			string 	`json:"type"` // Type refers to cab sav/etc
 	Colour			string 	`json:"colour"` // Red or White
 }
 
 type WineProfile struct {
 	ID				int 	`json:"id"`
-	Title			string 	`json:"title"`
+	Name			string 	`json:"Name"`
 	Year			int		`json:"date"` // May want to change this if using GORM to grab a date type
 	Manufacturer	string 	`json:"manufacturer"`
 	Type			string 	`json:"type"` // Type refers to cab sav/etc
