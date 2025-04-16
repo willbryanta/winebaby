@@ -2,10 +2,9 @@ package handlers
 
 import ("encoding/json"
 "net/http"
-"winebaby/internal/models"
-"winebaby/internal/repository")
+"winebaby/internal/models")
 
-func GetWines(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func GetWines(w http.ResponseWriter, r *http.Request) {
 	wines := []models.Wine{}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(wines)

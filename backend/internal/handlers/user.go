@@ -267,7 +267,6 @@ func GetUserReviews(w http.ResponseWriter, r *http.Request, repo *repository.Rep
 	json.NewEncoder(w).Encode(reviews)
 }
 func CreateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
 	var review models.Review
 	err := json.NewDecoder(r.Body).Decode(&review)
 	if err != nil {
@@ -275,11 +274,8 @@ func CreateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.R
 		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
 		return
 	}
-	// Review points to user that created the review, not the other way around
-	// Will need to update by appending the review to the user and not the review
-	//TODO: update the review to point to the user that created it and modify
 
-	if err := repo.CreateUserReview(username, review); err != nil {
+	if err := repo.CreateUserReview(review); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to create user review"})
 		return
@@ -289,8 +285,6 @@ func CreateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.R
 	json.NewEncoder(w).Encode(map[string]string{"message": "User review created successfully"})
 }
 func UpdateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
-	reviewId := chi.URLParam(r, "reviewId") // Extract review ID from URL
 	var review models.Review
 	err := json.NewDecoder(r.Body).Decode(&review)
 	if err != nil {
@@ -299,7 +293,7 @@ func UpdateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.R
 		return
 	}
 
-	if err := repo.UpdateUserReview(username, reviewId, review); err != nil {
+	if err := repo.UpdateUserReview(review); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to update user review"})
 		return
@@ -309,10 +303,8 @@ func UpdateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.R
 	json.NewEncoder(w).Encode(map[string]string{"message": "User review updated successfully"})
 }
 func DeleteUserReview(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
-	reviewId := chi.URLParam(r, "reviewId") // Extract review ID from URL
-
-	if err := repo.DeleteUserReview(username, reviewId); err != nil {
+	reviewId := chi.URLParam(r, "reviewId")
+	if err := repo.DeleteUserReview(reviewId); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to delete user review"})
 		return

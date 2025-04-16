@@ -133,8 +133,6 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 		err := rows.Scan(
 			&review.ID,
 			&review.WineID,
-			&review.Winemaker,
-			&review.WineName,
 			&review.Comment,
 			&review.ReviewDate,
 			&review.ReviewDateTime,
@@ -252,8 +250,6 @@ func (r *Repository) GetUserReviews(username string) ([]models.Review, error) {
 		err := rows.Scan(
 			&review.ID,
 			&review.WineID,
-			&review.Winemaker,
-			&review.WineName,
 			&review.Comment,
 			&review.ReviewDate,
 			&review.ReviewDateTime,
@@ -277,8 +273,6 @@ func (r *Repository) CreateUserReview(review models.Review) error {
 	err := r.db.QueryRow(query,
 		review.UserID,
 		review.WineID,
-		review.Winemaker,
-		review.WineName,
 		review.Comment,
 		review.ReviewDate,
 		review.ReviewDateTime,
@@ -295,8 +289,6 @@ func (r *Repository) UpdateUserReview(review models.Review) error {
 			  WHERE id = $11`
 	_, err := r.db.Exec(query,
 		review.WineID,
-		review.Winemaker,
-		review.WineName,
 		review.Comment,
 		review.ReviewDate,
 		review.ReviewDateTime,
@@ -321,8 +313,6 @@ func (r *Repository) GetUserReviewById(reviewID int) (models.Review, error) {
 	err := r.db.QueryRow(query, reviewID).Scan(
 		&review.ID,
 		&review.WineID,
-		&review.Winemaker,
-		&review.WineName,
 		&review.Comment,
 		&review.ReviewDate,
 		&review.ReviewDateTime,
