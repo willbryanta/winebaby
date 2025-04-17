@@ -303,7 +303,13 @@ func UpdateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.R
 	json.NewEncoder(w).Encode(map[string]string{"message": "User review updated successfully"})
 }
 func DeleteUserReview(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	reviewId := chi.URLParam(r, "reviewId")
+	reviewIdStr := chi.URLParam(r, "reviewId")
+	reviewId, err := strconv.Atoi(reviewIdStr)
+	if err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Invalid review ID"})
+        return
+    }
 	if err := repo.DeleteUserReview(reviewId); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to delete user review"})
@@ -314,9 +320,14 @@ func DeleteUserReview(w http.ResponseWriter, r *http.Request, repo *repository.R
 	json.NewEncoder(w).Encode(map[string]string{"message": "User review deleted successfully"})
 }
 func GetUserReviewById(w http.ResponseWriter, r *http.Request, repo *repository.Repository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] // Extract username from /api/users/{username}
-	reviewId := chi.URLParam(r, "reviewId") // Extract review ID from URL
-	review, err := repo.GetUserReviewById(username, reviewId)
+	reviewIdStr := chi.URLParam(r, "reviewId") // Extract review ID from URL
+	reviewId, err := strconv.Atoi(reviewIdStr)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid review ID"})
+		return
+	}
+	review, err := repo.GetUserReviewById(reviewId)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to fetch user review"})
