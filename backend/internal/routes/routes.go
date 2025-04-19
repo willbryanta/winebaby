@@ -9,15 +9,28 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+//TODO - may want to move struct and NewRepo to a separate file
+type Repository struct {
+    DB *sql.DB
+}
+
+func NewRepository(db *sql.DB) *Repository {
+	return &Repository{
+		DB: db,
+	}
+}
+
 func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r := chi.NewRouter()
+
+	repo := NewRepository(db) //Todo - may need to update this to repository.Repository
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("Welcome to Winebaby"))
 	})
 
 	r.Get("/wines", func(w http.ResponseWriter, r *http.Request){
-		handlers.GetWines(w, r, db)
+		handlers.GetWines(w, r)
 	})
 
 	r.Get("/reviews", func(w http.ResponseWriter, r *http.Request){
@@ -32,9 +45,9 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 		handlers.DeleteReview(w,r, db)})
 
 	r.Post("/signup", func(w http.ResponseWriter, r *http.Request){
-		handlers.SignUp(w,r, repo, db)})
+		handlers.SignUp(w,r, db)})
 	r.Post("/signin", func(w http.ResponseWriter, r *http.Request){
-		handlers.SignIn(w,r, repo, db)})
+		handlers.SignIn(w,r, db)})
 
 	r.Get("/user/{username}", func(w http.ResponseWriter, r *http.Request){
 		handlers.GetUserProfile(w,r,db)})
