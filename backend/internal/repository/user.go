@@ -5,15 +5,11 @@ import (
 	"winebaby/internal/models"
 )
 
-type Repository struct {
-	db *sql.DB
-}
-
-func (r *Repository) SignIn(username, password string) (models.User, error) {
+func (r *MainRepository) SignIn(username, password string) (models.User, error) {
 	query := `SELECT id, username, email, password FROM users WHERE username = $1 AND password = $2`
 	var user models.User
 	var email sql.NullString
-	err := r.db.QueryRow(query, username, password).Scan(&user.ID, &user.Username, &email, &user.Password)
+	err := r.DB.QueryRow(query, username, password).Scan(&user.ID, &user.Username, &email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.User{}, nil
@@ -26,7 +22,7 @@ func (r *Repository) SignIn(username, password string) (models.User, error) {
 	return user, nil
 }
 
-func (r *Repository) SignUp(username, password, email string) (models.User, error) {
+func (r *MainRepository) SignUp(username, password, email string) (models.User, error) {
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id`
 	var user models.User
 	var id int
@@ -34,7 +30,7 @@ func (r *Repository) SignUp(username, password, email string) (models.User, erro
 	if email != "" {
 		emailPtr = &email
 	}
-	err := r.db.QueryRow(query, username, password, emailPtr).Scan(&id)
+	err := r.DB.QueryRow(query, username, password, emailPtr).Scan(&id)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -45,17 +41,17 @@ func (r *Repository) SignUp(username, password, email string) (models.User, erro
 	return user, nil
 }
 
-func (r *Repository) CreateUser(user models.User) error {
+func (r *MainRepository) CreateUser(user models.User) error {
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id`
-	err := r.db.QueryRow(query, user.Username, user.Password, user.Email).Scan(&user.ID)
+	err := r.DB.QueryRow(query, user.Username, user.Password, user.Email).Scan(&user.ID)
 	return err
 }
 
-func (r *Repository) GetUserByUsername(username string) (models.User, error) {
+func (r *MainRepository) GetUserByUsername(username string) (models.User, error) {
 	query := `SELECT id, username, email, password FROM users WHERE username = $1`
 	var user models.User
 	var email sql.NullString
-	err := r.db.QueryRow(query, username).Scan(&user.ID, &user.Username, &email, &user.Password)
+	err := r.DB.QueryRow(query, username).Scan(&user.ID, &user.Username, &email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.User{}, nil
@@ -68,11 +64,11 @@ func (r *Repository) GetUserByUsername(username string) (models.User, error) {
 	return user, nil
 }
 
-func (r *Repository) GetUserProfile(username string) (models.UserProfile, error) {
+func (r *MainRepository) GetUserProfile(username string) (models.UserProfile, error) {
 	userQuery := `SELECT id, username, email FROM users WHERE username = $1`
 	var user models.UserProfile
 	var email sql.NullString
-	err := r.db.QueryRow(userQuery, username).Scan(&user.ID, &user.Username, &email)
+	err := r.DB.QueryRow(userQuery, username).Scan(&user.ID, &user.Username, &email)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.UserProfile{}, nil
@@ -88,7 +84,7 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
                           serving_size_unit_description_abbreviation, serving_size_unit_description_plural, 
                           price, rating, type, colour 
                    FROM favorite_wines WHERE user_id = $1`
-	rows, err := r.db.Query(winesQuery, user.ID)
+	rows, err := r.DB.Query(winesQuery, user.ID)
 	if err != nil {
 		return models.UserProfile{}, err
 	}
@@ -123,7 +119,7 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 	reviewsQuery := `SELECT id, wine_id, winemaker, wine_name, comment, review_date, review_date_time, 
                             review_date_time_utc, title, description, rating 
                      FROM reviews WHERE user_id = $1`
-	rows, err = r.db.Query(reviewsQuery, user.ID)
+	rows, err = r.DB.Query(reviewsQuery, user.ID)
 	if err != nil {
 		return models.UserProfile{}, err
 	}
@@ -148,11 +144,11 @@ func (r *Repository) GetUserProfile(username string) (models.UserProfile, error)
 	}
 	return user, nil
 }
-func (r *Repository) GetUserByEmail(email string) (models.User, error) {
+func (r *MainRepository) GetUserByEmail(email string) (models.User, error) {
 	query := `SELECT id, username, email, password FROM users WHERE email = $1`
 	var user models.User
 	var emailVal sql.NullString
-	err := r.db.QueryRow(query, email).Scan(&user.ID, &user.Username, &emailVal, &user.Password)
+	err := r.DB.QueryRow(query, email).Scan(&user.ID, &user.Username, &emailVal, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.User{}, nil
@@ -165,25 +161,25 @@ func (r *Repository) GetUserByEmail(email string) (models.User, error) {
 	return user, nil
 }
 
-func (r *Repository) UpdateUserProfile(user models.User) error {
+func (r *MainRepository) UpdateUserProfile(user models.User) error {
 	query := `UPDATE users SET username = $1, email = $2 WHERE id = $3`
-	_, err := r.db.Exec(query, user.Username, user.Email, user.ID)
+	_, err := r.DB.Exec(query, user.Username, user.Email, user.ID)
 	return err
 }
 
-func (r *Repository) DeleteUser(username string) error {
+func (r *MainRepository) DeleteUser(username string) error {
 	query := `DELETE FROM users WHERE username = $1`
-	_, err := r.db.Exec(query, username)
+	_, err := r.DB.Exec(query, username)
 	return err
 }
 
-func (r *Repository) GetUserFavoriteWines(username string) ([]models.Wine, error) {
+func (r *MainRepository) GetUserFavoriteWines(username string) ([]models.Wine, error) {
 	query := `SELECT id, name, year, manufacturer, region, alcohol_content, serving_temp, serving_size, 
 						  serving_size_unit, serving_size_unit_abbreviation, serving_size_unit_description, 
 						  serving_size_unit_description_abbreviation, serving_size_unit_description_plural, 
 						  price, rating, type, colour 
 				   FROM favorite_wines WHERE user_id = (SELECT id FROM users WHERE username = $1)`
-	rows, err := r.db.Query(query, username)
+	rows, err := r.DB.Query(query, username)
 	if err != nil {
 		return nil, err
 	}
@@ -219,26 +215,26 @@ func (r *Repository) GetUserFavoriteWines(username string) ([]models.Wine, error
 	return wines, nil
 }
 
-func (r *Repository) AddUserFavoriteWine(userID int, wineID int) error {
+func (r *MainRepository) AddUserFavoriteWine(userID int, wineID int) error {
 	query := `INSERT INTO favorite_wines (user_id, wine_id) VALUES ($1, $2)`
-	_, err := r.db.Exec(query, userID, wineID)
+	_, err := r.DB.Exec(query, userID, wineID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Repository) RemoveUserFavoriteWine(userID int, wineID int) error {
+func (r *MainRepository) RemoveUserFavoriteWine(userID int, wineID int) error {
 	query := `DELETE FROM favorite_wines WHERE user_id = $1 AND wine_id = $2`
-	_, err := r.db.Exec(query, userID, wineID)
+	_, err := r.DB.Exec(query, userID, wineID)
 	return err
 }
 
-func (r *Repository) GetUserReviews(username string) ([]models.Review, error) {
+func (r *MainRepository) GetUserReviews(username string) ([]models.Review, error) {
 	query := `SELECT id, wine_id, winemaker, wine_name, comment, review_date, review_date_time, 
 						  review_date_time_utc, title, description, rating 
 				   FROM reviews WHERE user_id = (SELECT id FROM users WHERE username = $1)`
-	rows, err := r.db.Query(query, username)
+	rows, err := r.DB.Query(query, username)
 	if err != nil {
 		return nil, err
 	}
@@ -266,11 +262,11 @@ func (r *Repository) GetUserReviews(username string) ([]models.Review, error) {
 	return reviews, nil
 }
 
-func (r *Repository) CreateUserReview(review models.Review) error {
+func (r *MainRepository) CreateUserReview(review models.Review) error {
 	query := `INSERT INTO reviews (user_id, wine_id, winemaker, wine_name, comment, review_date, 
 								  review_date_time, review_date_time_utc, title, description, rating) 
 			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`
-	err := r.db.QueryRow(query,
+	err := r.DB.QueryRow(query,
 		review.UserID,
 		review.WineID,
 		review.Comment,
@@ -283,11 +279,11 @@ func (r *Repository) CreateUserReview(review models.Review) error {
 	return err
 }
 
-func (r *Repository) UpdateUserReview(review models.Review) error {
+func (r *MainRepository) UpdateUserReview(review models.Review) error {
 	query := `UPDATE reviews SET wine_id = $1, winemaker = $2, wine_name = $3, comment = $4, review_date = $5, 
 								  review_date_time = $6, review_date_time_utc = $7, title = $8, description = $9, rating = $10 
 			  WHERE id = $11`
-	_, err := r.db.Exec(query,
+	_, err := r.DB.Exec(query,
 		review.WineID,
 		review.Comment,
 		review.ReviewDate,
@@ -299,18 +295,18 @@ func (r *Repository) UpdateUserReview(review models.Review) error {
 		review.ID)
 	return err
 }
-func (r *Repository) DeleteUserReview(reviewID int) error {
+func (r *MainRepository) DeleteUserReview(reviewID int) error {
 	query := `DELETE FROM reviews WHERE id = $1`
-	_, err := r.db.Exec(query, reviewID)
+	_, err := r.DB.Exec(query, reviewID)
 	return err
 }
 
-func (r *Repository) GetUserReviewById(reviewID int) (models.Review, error) {
+func (r *MainRepository) GetUserReviewById(reviewID int) (models.Review, error) {
 	query := `SELECT id, wine_id, winemaker, wine_name, comment, review_date, review_date_time, 
 						  review_date_time_utc, title, description, rating 
 				   FROM reviews WHERE id = $1`
 	var review models.Review
-	err := r.db.QueryRow(query, reviewID).Scan(
+	err := r.DB.QueryRow(query, reviewID).Scan(
 		&review.ID,
 		&review.WineID,
 		&review.Comment,

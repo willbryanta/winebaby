@@ -1,6 +1,8 @@
 package repository
 
-import "winebaby/internal/models"
+import (
+	"winebaby/internal/models"
+)
 
 var reviews = []models.Review{
 	{ID: 1, WineID:1, Title: "McClaren Vale 2024", Description: "Zesty and fruity with notes of licorice", Rating: 7},
@@ -23,6 +25,8 @@ func GetReviewById(id int) *models.Review{
 
 func CreateReview(r models.Review){
 	reviews = append(reviews, r)
+	
+
 }
 
 func UpdateReview(id int, updated models.Review) bool {

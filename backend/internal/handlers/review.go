@@ -12,21 +12,32 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func CreateReview(w http.ResponseWriter, r *http.Request, db *sql.DB){
+func CreateReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB){
 	var newReview models.Review
-	json.NewDecoder(r.Body).Decode(&newReview)
-	repository.CreateReview(newReview)
+
+	if err := json.NewDecoder(r.Body).Decode(&newReview); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(chi.URLParam(r, "wineId"))
+	if err != nil {
+		http.Error(w, "Invalid wine ID", http.StatusBadRequest)
+		return
+	}
+	newReview.WineID = id
 	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(newReview)
 }
 
-func GetReviews(w http.ResponseWriter, r *http.Request, db *sql.DB){
+func GetReviews(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB){
 	reviews:= repository.GetReviews()
 	
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(reviews)
 }
 
-func GetReviewById(w http.ResponseWriter, r *http.Request, db *sql.DB){
+func GetReviewById(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB){
 	idStr := chi.URLParam(r, "reviewId")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -43,7 +54,7 @@ func GetReviewById(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	json.NewEncoder(w).Encode(review)
 }
 
-func UpdateReview(w http.ResponseWriter, r *http.Request, db *sql.DB){
+func UpdateReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB){
 	idStr := chi.URLParam(r, "reviewId")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -61,7 +72,7 @@ func UpdateReview(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	}
 }
 
-func DeleteReview(w http.ResponseWriter, r *http.Request, db *sql.DB){
+func DeleteReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB){
 	idStr := chi.URLParam(r, "reviewId")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

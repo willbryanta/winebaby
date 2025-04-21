@@ -13,7 +13,7 @@ import (
 func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r := chi.NewRouter()
 
-	repo := &repository.NewRepository{db}
+	repo := &repository.MainRepository{DB: db}
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("Welcome to Winebaby"))
@@ -21,6 +21,9 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 
 	r.Get("/wines", func(w http.ResponseWriter, r *http.Request){
 		handlers.GetWines(w, r, repo, db)
+	})
+	r.Post("/wines", func(w http.ResponseWriter, r *http.Request){
+		handlers.AddWine(w, r, repo, db)
 	})
 
 	r.Get("/reviews", func(w http.ResponseWriter, r *http.Request){

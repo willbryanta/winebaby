@@ -5,13 +5,13 @@ import (
 	"winebaby/internal/models"
 )
 
-func (r *Repository) GetWines() ([]models.Wine, error) {
+func (r *MainRepository) GetWines() ([]models.Wine, error) {
 	query := `SELECT id, name, year, manufacturer, region, alcohol_content, serving_temp, serving_size, 
                      serving_size_unit, serving_size_unit接続: serving_size_unit_abbreviation, 
                      serving_size_unit_description, serving_size_unit_description_abbreviation, 
                      serving_size_unit_description_plural, price, rating, type, colour 
                      FROM wines`
-	rows, err := r.db.Query(query)
+	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -47,14 +47,14 @@ func (r *Repository) GetWines() ([]models.Wine, error) {
 	return wines, nil
 }
 
-func (r *Repository) GetWineByID(id int) (models.Wine, error) {
+func (r *MainRepository) GetWineByID(id int) (models.Wine, error) {
 	query := `SELECT id, name, year, manufacturer, region, alcohol_content, serving_temp, serving_size, 
                      serving_size_unit, serving_size_unit_abbreviation, 
                      serving_size_unit_description, serving_size_unit_description_abbreviation, 
                      serving_size_unit_description_plural, price, rating, type, colour 
                      FROM wines WHERE id = $1`
 	var wine models.Wine
-	err := r.db.QueryRow(query, id).Scan(
+	err := r.DB.QueryRow(query, id).Scan(
 		&wine.ID,
 		&wine.Name,
 		&wine.Year,
@@ -82,7 +82,7 @@ func (r *Repository) GetWineByID(id int) (models.Wine, error) {
 	return wine, nil
 }
 
-func (r *Repository) CreateWine(wine models.Wine) (int, error) {
+func (r *MainRepository) CreateWine(wine models.Wine) (int, error) {
 	query := `INSERT INTO wines (name, year, manufacturer, region, alcohol_content, serving_temp, 
                                serving_size, serving_size_unit, serving_size_unit_abbreviation, 
                                serving_size_unit_description, serving_size_unit_description_abbreviation, 
@@ -90,7 +90,7 @@ func (r *Repository) CreateWine(wine models.Wine) (int, error) {
               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
               RETURNING id`
 	var id int
-	err := r.db.QueryRow(query,
+	err := r.DB.QueryRow(query,
 		wine.Name,
 		wine.Year,
 		wine.Manufacturer,
@@ -114,7 +114,7 @@ func (r *Repository) CreateWine(wine models.Wine) (int, error) {
 	return id, nil
 }
 
-func (r *Repository) UpdateWine(wine models.Wine) error {
+func (r *MainRepository) UpdateWine(wine models.Wine) error {
 	query := `UPDATE wines SET name = $1, year = $2, manufacturer = $3, region = $4, 
                             alcohol_content = $5, serving_temp = $6, serving_size = $7, 
                             serving_size_unit = $8, serving_size_unit_abbreviation = $9, 
@@ -122,7 +122,7 @@ func (r *Repository) UpdateWine(wine models.Wine) error {
                             serving_size_unit_description_plural = $12, price = $13, rating = $14, 
                             type = $15, colour = $16 
               WHERE id = $17`
-	_, err := r.db.Exec(query,
+	_, err := r.DB.Exec(query,
 		wine.Name,
 		wine.Year,
 		wine.Manufacturer,
@@ -144,8 +144,8 @@ func (r *Repository) UpdateWine(wine models.Wine) error {
 	return err
 }
 
-func (r *Repository) DeleteWine(id int) error {
+func (r *MainRepository) DeleteWine(id int) error {
 	query := `DELETE FROM wines WHERE id = $1`
-	_, err := r.db.Exec(query, id)
+	_, err := r.DB.Exec(query, id)
 	return err
 }
