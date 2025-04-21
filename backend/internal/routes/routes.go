@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"winebaby/internal/handlers"
-	"winebaby/internal/repository"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -13,16 +12,16 @@ type Repository struct {
     DB *sql.DB
 }
 
-func NewRepository(db *sql.DB) *repository.Repository {
-	return &repository.Repository{
-		DB: *sql.DB, // Ensure this matches the updated repository.Repository struct
+func NewRepository(db *sql.DB) *Repository {
+	return &Repository{
+		DB: db,
 	}
 }
 
 func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r := chi.NewRouter()
 
-	repo := NewRepository(db)
+	repo := &Repository{DB: db}
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("Welcome to Winebaby"))

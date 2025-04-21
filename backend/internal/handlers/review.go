@@ -27,8 +27,14 @@ func GetReviews(w http.ResponseWriter, r *http.Request, db *sql.DB){
 }
 
 func GetReviewById(w http.ResponseWriter, r *http.Request, db *sql.DB){
-	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
+	idStr := chi.URLParam(r, "reviewId")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid review ID", http.StatusBadRequest)
+		return
+	}
 	review := repository.GetReviewById(id)
+	// Check if review is nil
 	if review == nil {
 		http.Error(w, "Review not found", http.StatusNotFound)
 		return
@@ -38,7 +44,12 @@ func GetReviewById(w http.ResponseWriter, r *http.Request, db *sql.DB){
 }
 
 func UpdateReview(w http.ResponseWriter, r *http.Request, db *sql.DB){
-	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
+	idStr := chi.URLParam(r, "reviewId")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid review ID", http.StatusBadRequest)
+		return
+	}
 	var updatedReview models.Review
 	json.NewDecoder(r.Body).Decode(&updatedReview)
 	updatedReview.ID = id
@@ -51,7 +62,12 @@ func UpdateReview(w http.ResponseWriter, r *http.Request, db *sql.DB){
 }
 
 func DeleteReview(w http.ResponseWriter, r *http.Request, db *sql.DB){
-	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
+	idStr := chi.URLParam(r, "reviewId")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid review ID", http.StatusBadRequest)
+		return
+	}
 	if repository.DeleteReview(id){
 		w.WriteHeader(http.StatusOK)
 	} else {
