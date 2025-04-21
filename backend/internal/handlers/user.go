@@ -31,6 +31,7 @@ func GenerateJWT(username string) (string, error) {
 
 func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	var user models.User
+	w.Header().Set("Content-Type", "application/json")
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -98,6 +99,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainReposit
 	}
 
 	w.WriteHeader(http.StatusCreated)
+
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
 }
 

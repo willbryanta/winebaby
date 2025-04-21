@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState(""); // Optional: remove if not needed
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -14,13 +14,19 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
 
-    const res = await fetch("http://localhost:8080/api/signup", {
+    const res = await fetch("http://localhost:8080/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password, email }),
     });
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      setError("Invalid response from server.");
+      return;
+    }
 
     if (!res.ok) {
       setError(data.message || "Something went wrong");

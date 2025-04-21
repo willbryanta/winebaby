@@ -61,6 +61,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error connecting to the database: ", err)
 	}
+	log.Println(dbConn.Stats())
 	defer dbConn.Close()
 
 	if err = dbConn.Ping(); err != nil {
