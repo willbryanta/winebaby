@@ -26,6 +26,10 @@ func connectDB() (*sql.DB, error){
 		log.Fatal("Error opening database: ", err)
 		return nil, err
 	}
+
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	
 	return db, nil
 }
 
