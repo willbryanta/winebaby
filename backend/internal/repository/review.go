@@ -43,30 +43,31 @@ func GetReviews(r *MainRepository) ([]models.Review, error){
 }
 
 // Get a review by ID
-func (r *MainRepository) GetReviewById(id int) (models.Review, error){
+func (r *MainRepository) GetReviewById(id int) (models.Review, error) {
 	query := `SELECT id, user_id, wine_id, comment, review_date, review_date_time, review_date_time_utc, title, description, rating 
-	FROM reviews WHERE id = $1`
-var review models.Review
-err := r.DB.QueryRow(query, id).Scan(
-&review.ID,
-&review.UserID,
-&review.WineID,
-&review.Comment,
-&review.ReviewDate,
-&review.ReviewDateTime,
-&review.ReviewDateTimeUTC,
-&review.Title,
-&review.Description,
-&review.Rating,
-)
-if err != nil {
-if err == sql.ErrNoRows {
-  return models.Review{}, nil
+              FROM reviews WHERE id = $1`
+	var review models.Review
+	err := r.DB.QueryRow(query, id).Scan(
+		&review.ID,
+		&review.UserID,
+		&review.WineID,
+		&review.Comment,
+		&review.ReviewDate,
+		&review.ReviewDateTime,
+		&review.ReviewDateTimeUTC,
+		&review.Title,
+		&review.Description,
+		&review.Rating,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.Review{}, nil
+		}
+		return models.Review{}, err
+	}
+	return review, nil
 }
-return models.Review{}, err
-}
-return review, nil
-}
+
 
 func CreateReview(r models.Review){
 	reviews = append(reviews, r)
