@@ -74,14 +74,25 @@ func CreateReview(r models.Review){
 	
 }
 
-func UpdateReview(id int, updated models.Review) bool {
-	for i, r := range reviews{
-		if r.ID == id {
-			reviews[i] = updated
-			return true
-		}
+func (r *MainRepository) CreateReview(review models.Review) (int, error) {
+	query := `INSERT INTO reviews (user_id, wine_id, comment, review_date, review_date_time, review_date_time_utc, title, description, rating) 
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`
+	var id int
+	err := r.DB.QueryRow(query,
+		review.UserID,
+		review.WineID,
+		review.Comment,
+		review.ReviewDate,
+		review.ReviewDateTime,
+		review.ReviewDateTimeUTC,
+		review.Title,
+		review.Description,
+		review.Rating,
+	).Scan(&id)
+	if err != nil {
+		return 0, err
 	}
-	return false
+	return id, nil
 }
 
 func DeleteReview(id int) bool {
