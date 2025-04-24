@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -31,6 +32,65 @@ func connectDB() (*sql.DB, error){
 	db.SetMaxIdleConns(25)
 	
 	return db, nil
+}
+
+func initSchema(db *sql.DB) error {
+	queries := []string{
+		`CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			username VARCHAR(50) UNIQUE NOT NULL,
+			password TEXT NOT NULL,
+			email VARCHAR(100) UNIQUE,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)`,
+		`CREATE TABLE IF NOT EXISTS wines (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR(100) NOT NULL,
+			year INT,
+			manufacturer VARCHAR(100),
+			region VARCHAR(100),
+			alcohol_content FLOAT,
+			serving_temp FLOAT,
+			serving_size FLOAT,
+			serving_size_unit VARCHAR(50),
+			serving_size_unit_abbreviation VARCHAR(10),
+			serving_size_unit_description VARCHAR(100),
+			serving_size_unit_description_abbreviation VARCHAR(10),
+			serving_size_unit_description_plural VARCHAR(100),
+			price FLOAT,
+			rating FLOAT,
+			type VARCHAR(50),
+			colour VARCHAR(50),
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)`,
+		`CREATE TABLE IF NOT EXISTS favorite_wines (
+			user_id INT REFERENCES users(id) ON DELETE CASCADE,
+			wine_id INT REFERENCES wines(id) ON DELETE CASCADE,
+			PRIMARY KEY (user_id, wine_id),
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)`,
+		`CREATE TABLE IF NOT EXISTS reviews (
+			id SERIAL PRIMARY KEY,
+			user_id INT REFERENCES users(id) ON DELETE CASCADE,
+			wine_id INT REFERENCES wines(id) ON DELETE CASCADE,
+			comment TEXT,
+			review_date VARCHAR(50),
+			review_date_time VARCHAR(50),
+			review_date_time_utc VARCHAR(50),
+			title VARCHAR(100),
+			description TEXT,
+			rating INT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)`,
+	}
+
+	for _, query := range queries {
+		_, err := db.Exec(query)
+		if err != nil {
+			return fmt.Errorf("error executing schema query: %w", err)
+		}
+	}
+	return nil
 }
 
 func CORSMiddleware(next http.Handler) http.Handler {
@@ -83,7 +143,7 @@ func main() {
 	}
 
 	r := chi.NewRouter()
-	r.Use(CORSMiddleware)
+	r.Use(CORSMiddleware) 
 
 
 	r.Mount("/", routes.RegisterRoutes(dbConn))
