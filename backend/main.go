@@ -34,6 +34,7 @@ func connectDB() (*sql.DB, error){
 	return db, nil
 }
 
+// TODO: Move this to a separate file potentially
 func initSchema(db *sql.DB) error {
 	queries := []string{
 		`CREATE TABLE IF NOT EXISTS users (
