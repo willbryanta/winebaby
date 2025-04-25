@@ -39,7 +39,7 @@ func GetReviews(r *MainRepository) ([]models.Review, error){
 }
 
 // Get a review by ID
-func GetReviewById(r *MainRepository) (models.Review, error) {
+func GetReviewById(r *MainRepository, id int) (models.Review, error) {
 	query := `SELECT id, user_id, wine_id, comment, review_date, review_date_time, review_date_time_utc, title, description, rating 
               FROM reviews WHERE id = $1`
 	var review models.Review
@@ -85,10 +85,10 @@ func CreateReview(r *MainRepository, review models.Review) (int, error) {
 	return id, nil
 }
 
-func UpdateReview(r *MainRepository, updated models.Review) error {
+func UpdateReview(r *MainRepository, id int, updated models.Review) error {
 	query := `UPDATE reviews SET user_id = $1, wine_id = $2, comment = $3, review_date = $4, review_date_time = $5, 
-                             review_date_time_utc = $6, title = $7, description = $8, rating = $9 
-              WHERE id = $10`
+							 review_date_time_utc = $6, title = $7, description = $8, rating = $9 
+			  WHERE id = $10`
 	_, err := r.DB.Exec(query,
 		updated.UserID,
 		updated.WineID,
