@@ -31,7 +31,11 @@ func CreateReview(w http.ResponseWriter, r *http.Request, repo *repository.MainR
 }
 
 func GetReviews(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB){
-	reviews:= repository.GetReviews()
+	reviews, err := repository.GetReviews(repo)
+	if err != nil {
+		http.Error(w, "Failed to fetch reviews", http.StatusInternalServerError)
+		return
+	}
 	
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(reviews)
@@ -44,9 +48,12 @@ func GetReviewById(w http.ResponseWriter, r *http.Request, repo *repository.Main
 		http.Error(w, "Invalid review ID", http.StatusBadRequest)
 		return
 	}
-	review := repository.GetReviewById(id)
-	// Check if review is nil
-	if review == nil {
+	review, err := repository.GetReviewById(repo, id)
+	if err != nil {
+		http.Error(w, "Failed to fetch review", http.StatusInternalServerError)
+		return
+	}
+	if review.ID == 0 {
 		http.Error(w, "Review not found", http.StatusNotFound)
 		return
 	}
@@ -65,11 +72,16 @@ func UpdateReview(w http.ResponseWriter, r *http.Request, repo *repository.MainR
 	json.NewDecoder(r.Body).Decode(&updatedReview)
 	updatedReview.ID = id
 	
-	if repository.UpdateReview(id, updatedReview){
-		w.WriteHeader(http.StatusOK)
-	} else {
-		http.Error(w, "Review not found", http.StatusNotFound)
+	err = repository.UpdateReview(repo, id, updatedReview)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Review not found", http.StatusNotFound)
+		} else {
+			http.Error(w, "Failed to update review", http.StatusInternalServerError)
+		}
+		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func DeleteReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB){
@@ -79,9 +91,14 @@ func DeleteReview(w http.ResponseWriter, r *http.Request, repo *repository.MainR
 		http.Error(w, "Invalid review ID", http.StatusBadRequest)
 		return
 	}
-	if repository.DeleteReview(id){
-		w.WriteHeader(http.StatusOK)
-	} else {
-		http.Error(w, "Review not found", http.StatusNotFound)
+	err = repository.DeleteReview(repo, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Review not found", http.StatusNotFound)
+		} else {
+			http.Error(w, "Failed to delete review", http.StatusInternalServerError)
+		}
+		return
 	}
+	w.WriteHeader(http.StatusOK)
 }

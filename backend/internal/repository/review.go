@@ -103,7 +103,7 @@ func UpdateReview(r *MainRepository, id int, updated models.Review) error {
 	)
 	return err
 }
-func (r *MainRepository) DeleteReview(id int) error {
+func DeleteReview(r *MainRepository, id int) error {
 	query := `DELETE FROM reviews WHERE id = $1`
 	_, err := r.DB.Exec(query, id)
 	return err
