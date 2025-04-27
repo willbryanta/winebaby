@@ -66,7 +66,6 @@ func Seed(db *sql.DB) error {
 		}
 	}
 
-	// Insert sample favorite wines
 	favoriteWines := []struct {
 		username string
 		wineID   int
@@ -85,7 +84,7 @@ func Seed(db *sql.DB) error {
 		}
 	}
 
-	// Insert sample reviews
+
 	reviews := []struct {
 		username, comment, reviewDate, reviewDateTime, reviewDateTimeUTC, title, description string
 		userID, wineID, rating                                                      int

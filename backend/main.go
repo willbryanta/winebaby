@@ -9,11 +9,14 @@ import (
 	"os"
 
 	"winebaby/db"
+	"winebaby/internal/repository"
 	"winebaby/internal/routes"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 func connectDB() (*sql.DB, error){
@@ -112,6 +115,10 @@ func CORSMiddleware(next http.Handler) http.Handler {
 
 func main() {
 
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
+	log.Println("Starting winebaby server...")
+
 	seed := flag.Bool("seed", false, "Seed the database with sample data")
 	flag.Parse()
 	if *seed {
@@ -143,11 +150,16 @@ func main() {
 		return
 	}
 
+	repo := repository.NewMainRepository(dbConn)
+
 	r := chi.NewRouter()
 	r.Use(CORSMiddleware) 
+	r.Mount("/", routes.RegisterRoutes(repo, dbConn))
 
-
-	r.Mount("/", routes.RegisterRoutes(dbConn))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	log.Println("Server running on port 8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {
