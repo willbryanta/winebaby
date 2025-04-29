@@ -154,7 +154,7 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(CORSMiddleware) 
-	r.Mount("/", routes.RegisterRoutes(repo, dbConn))
+	r.Mount("/", routes.RegisterRoutes(repo))
 
 	port := os.Getenv("PORT")
 	if port == "" {
