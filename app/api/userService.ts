@@ -30,7 +30,7 @@ const getProfile = async (user: User): Promise<ProfileResponse> => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
   try {
-    const res = await fetch(`${BACKEND_URL}/users/${user.id}`, {
+    const res = await fetch(`${BACKEND_URL}/users/${user.ID}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

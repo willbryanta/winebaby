@@ -1,6 +1,7 @@
 // /Users/will/Documents/Software_Engineering_Projects/winebaby/app/dashboard/page.tsx
 
 import React from "react";
+import NavBar from "../src/components/NavBar/NavBar";
 
 type Review = {
   ID: number;
@@ -43,6 +44,7 @@ const reviews: Review[] = [
 const Dashboard: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <NavBar />
       <h1 className="text-2xl font-bold mb-4">Wine Reviews Dashboard</h1>
       <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-6">
         {reviews.map((review) => (
