@@ -3,53 +3,54 @@
 import React from "react";
 
 type Review = {
-  id: number;
-  user: string;
-  wine: string;
-  rating: number;
-  comment: string;
+  ID: number;
+  WineID: number;
+  Comment: string;
+  ReviewDate: string;
+  ReviewDateTime: string;
+  RewviewDateTimeUTC: string;
+  Title: string;
+  Description: string;
+  Rating: number;
 };
 
+// TODO: Replace with actual data fetching logic
 const reviews: Review[] = [
   {
-    id: 1,
-    user: "Alice",
-    wine: "Chardonnay",
-    rating: 4,
-    comment: "Crisp and refreshing!",
+    ID: 1,
+    WineID: 101,
+    Comment: "Great wine, loved the taste!",
+    ReviewDate: "2023-10-01",
+    ReviewDateTime: "2023-10-01T12:00:00Z",
+    RewviewDateTimeUTC: "2023-10-01T12:00:00Z",
+    Title: "Amazing!",
+    Description: "This wine is fantastic. Highly recommend it.",
+    Rating: 5,
   },
   {
-    id: 2,
-    user: "Bob",
-    wine: "Merlot",
-    rating: 5,
-    comment: "Rich and full-bodied.",
-  },
-  {
-    id: 3,
-    user: "Charlie",
-    wine: "Pinot Noir",
-    rating: 3,
-    comment: "Light and fruity.",
+    ID: 2,
+    WineID: 102,
+    Comment: "Not my favorite, but decent.",
+    ReviewDate: "2023-10-02",
+    ReviewDateTime: "2023-10-02T14:00:00Z",
+    RewviewDateTimeUTC: "2023-10-02T14:00:00Z",
+    Title: "Okay",
+    Description: "It was okay, but I've had better.",
+    Rating: 3,
   },
 ];
 
 const Dashboard: React.FC = () => {
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">User Feed</h1>
-      <div className="space-y-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-2xl font-bold mb-4">Wine Reviews Dashboard</h1>
+      <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-6">
         {reviews.map((review) => (
-          <div
-            key={review.id}
-            className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
-          >
-            <h2 className="text-lg font-semibold">{review.wine}</h2>
-            <p className="text-sm text-gray-600">Reviewed by: {review.user}</p>
-            <p className="text-yellow-500">
-              Rating: {"⭐".repeat(review.rating)}
-            </p>
-            <p className="mt-2">{review.comment}</p>
+          <div key={review.ID} className="mb-4 p-4 border-b">
+            <h2 className="text-xl font-semibold">{review.Title}</h2>
+            <p className="text-gray-600">{review.Comment}</p>
+            <p className="text-sm text-gray-500">{review.ReviewDate}</p>
+            <p className="text-sm text-gray-500">Rating: {review.Rating}/5</p>
           </div>
         ))}
       </div>
