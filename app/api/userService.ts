@@ -1,4 +1,9 @@
-import { User } from "next-auth";
+type User = {
+  ID: number;
+  Username: string;
+  Email: string;
+  Password: string;
+};
 
 interface ProfileResponse {
   data?: string; //Might have to double check whether this is right
@@ -25,14 +30,13 @@ const getProfile = async (user: User): Promise<ProfileResponse> => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
   try {
-    const res = await fetch(`${BACKEND_URL}/users/${user._id}`, {
+    const res = await fetch(`${BACKEND_URL}/users/${user.id}`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY)}`,
+        Authorization: `Bearer ${token}`,
       },
-      user,
     });
     if (!res.ok) {
-      throw new Error(res.error);
+      throw new Error(`HTTP error! Status: ${res.status} ${res.statusText}`);
     }
     const data: ProfileResponse = await res.json();
 
@@ -42,3 +46,5 @@ const getProfile = async (user: User): Promise<ProfileResponse> => {
     return { error: err.message };
   }
 };
+
+export { getProfile };

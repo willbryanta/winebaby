@@ -14,7 +14,7 @@ interface ErrorWithMessage {
 
 const createReview = async (
   userAgent: string,
-  review: Record<string, any>
+  review: Record<string, unknown>
 ): Promise<ReviewResponse> => {
   try {
     if (!BACKEND_URL) {
@@ -82,3 +82,5 @@ const getReview = async (review: string): Promise<ReviewResponse> => {
     return { error: err.message };
   }
 };
+
+export { createReview, getReview };
