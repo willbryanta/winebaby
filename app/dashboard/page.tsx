@@ -2,46 +2,33 @@
 
 import React from "react";
 import NavBar from "../src/components/NavBar/NavBar";
-
-type Review = {
-  ID: number;
-  WineID: number;
-  Comment: string;
-  ReviewDate: string;
-  ReviewDateTime: string;
-  RewviewDateTimeUTC: string;
-  Title: string;
-  Description: string;
-  Rating: number;
-};
-
-// TODO: Replace with actual data fetching logic
-const reviews: Review[] = [
-  {
-    ID: 1,
-    WineID: 101,
-    Comment: "Great wine, loved the taste!",
-    ReviewDate: "2023-10-01",
-    ReviewDateTime: "2023-10-01T12:00:00Z",
-    RewviewDateTimeUTC: "2023-10-01T12:00:00Z",
-    Title: "Amazing!",
-    Description: "This wine is fantastic. Highly recommend it.",
-    Rating: 5,
-  },
-  {
-    ID: 2,
-    WineID: 102,
-    Comment: "Not my favorite, but decent.",
-    ReviewDate: "2023-10-02",
-    ReviewDateTime: "2023-10-02T14:00:00Z",
-    RewviewDateTimeUTC: "2023-10-02T14:00:00Z",
-    Title: "Okay",
-    Description: "It was okay, but I've had better.",
-    Rating: 3,
-  },
-];
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const Dashboard: React.FC = () => {
+  const { data: session, status } = useSession();
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    if (session?.user?.token) {
+      fetch(`http://localhost:8080/${process.env.PROTECTED_ENDPOINT}`, {
+        headers: {
+          Authorization: `Bearer ${session.user.token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => setData(data))
+        .catch((err) => console.error(err));
+    }
+  }, [session]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+  if (!session) {
+    return <p>Access Denied</p>;
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <NavBar />
