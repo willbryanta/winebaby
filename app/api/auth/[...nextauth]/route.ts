@@ -6,48 +6,59 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: {
-          label: "Username",
-          type: "text",
-          placeholder: "Enter username",
-        },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        const response = await fetch("http://localhost:8080/api/auth/login", {
+      async authorize(credentials, req) {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("Username and password are required");
+        }
+
+        // Make a POST request to your Golang backend
+        const res = await fetch("http://localhost:8080/signin", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
-            username: credentials?.username,
-            password: credentials?.password,
+            username: credentials.username,
+            password: credentials.password,
           }),
         });
-        const user = await response.json();
-        if (response.ok && user) {
-          return { id: user.id, name: user.username, email: user.email };
+
+        const data = await res.json();
+
+        if (!res.ok || !data.token) {
+          throw new Error(data.message || "Invalid username or password");
         }
-        return null;
+
+        // Return user object with JWT token
+        return {
+          id: credentials.username, // Use username as ID (or fetch actual ID from backend)
+          name: credentials.username,
+          token: data.token, // Store the JWT token
+        };
       },
     }),
   ],
-  pages: {
-    signIn: "/signin",
-    signOut: "/signout",
-  },
-  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.token = user.token; // Store JWT in token
+      }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id as string;
+      session.user.id = token.id;
+      session.user.token = token.token; // Pass JWT to session
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/signin", // Your sign-in page
+  },
+  secret: process.env.NEXTAUTH_SECRET, // Set in .env
 };
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
-
-export { handlers as GET, handlers as POST };
+export default NextAuth(authOptions);

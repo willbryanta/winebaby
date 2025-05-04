@@ -5,22 +5,22 @@ import (
 	"winebaby/internal/models"
 )
 
-func (r *MainRepository) SignIn(username, password string) (models.User, error) {
-	query := `SELECT id, username, email, password FROM users WHERE username = $1 AND password = $2`
-	var user models.User
-	var email sql.NullString
-	err := r.DB.QueryRow(query, username, password).Scan(&user.ID, &user.Username, &email, &user.Password)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return models.User{}, nil
-		}
-		return models.User{}, err
-	}
-	if email.Valid {
-		user.Email = &email.String
-	}
-	return user, nil
-}
+// func (r *MainRepository) SignIn(username, password string) (models.User, error) {
+// 	query := `SELECT id, username, email, password FROM users WHERE username = $1 AND password = $2`
+// 	var user models.User
+// 	var email sql.NullString
+// 	err := r.DB.QueryRow(query, username, password).Scan(&user.ID, &user.Username, &email, &user.Password)
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			return models.User{}, nil
+// 		}
+// 		return models.User{}, err
+// 	}
+// 	if email.Valid {
+// 		user.Email = &email.String
+// 	}
+// 	return user, nil
+// }
 
 func (r *MainRepository) SignUp(username, password, email string) (models.User, error) {
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id`

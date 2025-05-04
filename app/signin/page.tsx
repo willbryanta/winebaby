@@ -8,17 +8,21 @@ export default function SignInPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     const result = await signIn("credentials", {
       username,
       password,
       redirect: false,
     });
+
+    setLoading(false);
 
     if (result?.error) {
       setError(result.error);
@@ -48,6 +52,7 @@ export default function SignInPage() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full p-2 border rounded"
+            disabled={loading}
           />
         </div>
         <div className="mb-4">
@@ -63,13 +68,15 @@ export default function SignInPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-2 border rounded"
+            disabled={loading}
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-wine hover:bg-wine-dark text-white font-semibold py-2 rounded"
+          className="w-full bg-wine hover:bg-wine-dark text-white font-semibold py-2 rounded disabled:opacity-50"
+          disabled={loading}
         >
-          Sign In
+          {loading ? "Signing In..." : "Sign In"}
         </button>
       </form>
     </div>
