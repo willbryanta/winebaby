@@ -57,25 +57,33 @@ const Dashboard: React.FC = () => {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
   }
   if (!session) {
-    return <p>Access Denied</p>;
+    return (
+      <p className="flex items-center justify-center h-screen">Access Denied</p>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col w-screen h-screen bg-gray-100 overflow-hidden">
       <NavBar />
-      <h1 className="text-2xl font-bold mb-4">Wine Reviews Dashboard</h1>
-      <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-6">
-        {reviews.map((review) => (
-          <div key={review.ID} className="mb-4 p-4 border-b">
-            <h2 className="text-xl font-semibold">{review.Title}</h2>
-            <p className="text-gray-600">{review.Comment}</p>
-            <p className="text-sm text-gray-500">{review.ReviewDate}</p>
-            <p className="text-sm text-gray-500">Rating: {review.Rating}/5</p>
-          </div>
-        ))}
+      <div className="flex-1 flex flex-col items-center overflow-y-auto py-6">
+        <h1 className="text-2xl font-bold mb-4">Wine Reviews Dashboard</h1>
+        <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mx-4">
+          {reviews.map((review) => (
+            <div key={review.ID} className="mb-4 p-4 border-b last:border-b-0">
+              <h2 className="text-xl font-semibold">{review.Title}</h2>
+              <p className="text-gray-600">{review.Comment}</p>
+              <p className="text-sm text-gray-500">{review.ReviewDate}</p>
+              <p className="text-sm text-gray-500">Rating: {review.Rating}/5</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
