@@ -1,4 +1,3 @@
-import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions = {
@@ -9,7 +8,7 @@ export const authOptions = {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
           throw new Error("Username and password are required");
         }
@@ -40,14 +39,14 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: { id?: string; token?: string }; user?: { id: string; token: string } }) {
       if (user) {
         token.id = user.id;
         token.token = user.token;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: { user: { id?: string; token?: string } }; token: { id?: string; token?: string } }) {
       session.user.id = token.id;
       session.user.token = token.token;
       return session;

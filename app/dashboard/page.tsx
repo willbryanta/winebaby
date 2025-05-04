@@ -3,7 +3,17 @@
 import React from "react";
 import NavBar from "../src/components/NavBar/NavBar";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      token?: string;
+    };
+  }
+}
 
 type Review = {
   ID: number;
@@ -45,20 +55,6 @@ const reviews: Review[] = [
 
 const Dashboard: React.FC = () => {
   const { data: session, status } = useSession();
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    if (session?.user?.token) {
-      fetch(`http://localhost:8080/${process.env.PROTECTED_ENDPOINT}`, {
-        headers: {
-          Authorization: `Bearer ${session.user.token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => setData(data))
-        .catch((err) => console.error(err));
-    }
-  }, [session]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
