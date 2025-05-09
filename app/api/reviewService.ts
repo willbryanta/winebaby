@@ -1,6 +1,4 @@
-const BACKEND_URL = import.meta.env.VITE_EXPRESS_BACKEND_URL as
-  | string
-  | undefined;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL as string | undefined;
 const TOKEN_KEY = import.meta.env.VITE_JWT_KEY as string | undefined;
 
 interface ReviewResponse {
@@ -13,7 +11,6 @@ interface ErrorWithMessage {
 }
 
 const createReview = async (
-  userAgent: string,
   review: Record<string, unknown>
 ): Promise<ReviewResponse> => {
   try {
@@ -24,13 +21,12 @@ const createReview = async (
       throw new Error("Token key is not configured");
     }
     const token =
-      typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
+      typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null; // May not need this
     const res = await fetch(`${BACKEND_URL}/reviews`, {
       method: "POST",
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
         "Content-type": "application/json",
-        "User-Agent": userAgent,
       },
       body: JSON.stringify(review),
     });
@@ -57,7 +53,7 @@ const getReview = async (review: string): Promise<ReviewResponse> => {
       throw new Error("Token key is not configured");
     }
     const token =
-      typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
+      typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null; //May not need this
     const res = await fetch(
       `${BACKEND_URL}/reviews?review=${encodeURIComponent(review)}`,
       {
@@ -73,6 +69,39 @@ const getReview = async (review: string): Promise<ReviewResponse> => {
     }
     const data: ReviewResponse = await res.json();
 
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    return data;
+  } catch (error) {
+    const err = error as ErrorWithMessage;
+    return { error: err.message };
+  }
+};
+
+const updateReview = async (
+  reviewId: number,
+  review: Record<string, unknown>
+) => {
+  try {
+    if (!BACKEND_URL) {
+      throw new Error("Backend URL is not configured correctly");
+    }
+    if (!TOKEN_KEY) {
+      throw new Error("Token key is not configured properly");
+    }
+    const res = await fetch(`${BACKEND_URL}/reviews/${reviewId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${TOKEN_KEY}`,
+      },
+      body: JSON.stringify(review),
+    });
+    if (!res.ok) {
+      throw new Error(`Request failed with status ${res.status}`);
+    }
+    const data: ReviewResponse = await res.json();
     if (data.error) {
       throw new Error(data.error);
     }
