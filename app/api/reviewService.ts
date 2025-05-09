@@ -112,4 +112,39 @@ const updateReview = async (
   }
 };
 
-export { createReview, getReview };
+const deleteReview = async (
+  reviewId: number,
+  review: Record<string, unknown>
+) => {
+  try {
+    if (!BACKEND_URL) {
+      throw new Error("Backend URL is not configured");
+    }
+    if (!TOKEN_KEY) {
+      throw new Error("Token key is not configured");
+    }
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null; // May not need this
+    const res = await fetch(`${BACKEND_URL}/reviews/${reviewId}`, {
+      method: "DELETE",
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(review),
+    });
+    if (!res.ok) {
+      throw new Error(`Request failed with status ${res.status}`);
+    }
+    const data: ReviewResponse = await res.json();
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    return data;
+  } catch (error) {
+    const err = error as ErrorWithMessage;
+    return { error: err.message };
+  }
+};
+
+export { createReview, getReview, updateReview, deleteReview };
