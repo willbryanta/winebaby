@@ -21,7 +21,7 @@ type Review = {
   Comment: string;
   ReviewDate: string;
   ReviewDateTime: string;
-  RewviewDateTimeUTC: string;
+  ReviewDateTimeUTC: string;
   Title: string;
   Description: string;
   Rating: number;
@@ -35,7 +35,7 @@ const reviews: Review[] = [
     Comment: "Great wine, loved the taste!",
     ReviewDate: "2023-10-01",
     ReviewDateTime: "2023-10-01T12:00:00Z",
-    RewviewDateTimeUTC: "2023-10-01T12:00:00Z",
+    ReviewDateTimeUTC: "2023-10-01T12:00:00Z",
     Title: "Amazing!",
     Description: "This wine is fantastic. Highly recommend it.",
     Rating: 5,
@@ -46,7 +46,7 @@ const reviews: Review[] = [
     Comment: "Not my favorite, but decent.",
     ReviewDate: "2023-10-02",
     ReviewDateTime: "2023-10-02T14:00:00Z",
-    RewviewDateTimeUTC: "2023-10-02T14:00:00Z",
+    ReviewDateTimeUTC: "2023-10-02T14:00:00Z",
     Title: "Okay",
     Description: "It was okay, but I've had better.",
     Rating: 3,
