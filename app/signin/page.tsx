@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
@@ -16,19 +15,41 @@ export default function SignInPage() {
     setError("");
     setLoading(true);
 
-    const result = await signIn("credentials", {
-      username,
-      password,
-      redirect: false,
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedUsername || !trimmedPassword) {
+      setError("Username and password are required");
+      setLoading(false);
+      return;
+    }
+
+    const res = await fetch("http://localhost:8080/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: trimmedUsername,
+        password: trimmedPassword,
+      }),
     });
 
-    setLoading(false);
-
-    if (result?.error) {
-      setError(result.error);
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      setError("Invalid response from server.");
+      setLoading(false);
+      return;
+    }
+    if (!res.ok) {
+      setError(data.message || "Something went wrong");
     } else {
+      localStorage.setItem("token", data.token);
       router.push("/dashboard");
     }
+    setLoading(false);
   };
 
   return (

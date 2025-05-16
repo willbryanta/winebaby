@@ -117,6 +117,7 @@ func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.MainReposit
 
 	credentials.Username = strings.TrimSpace(credentials.Username)
 	credentials.Password = strings.TrimSpace(credentials.Password)
+	
 	if credentials.Username == "" || credentials.Password == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Username and password are required"})
