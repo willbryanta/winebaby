@@ -58,9 +58,6 @@ func main() {
 
 	seed := flag.Bool("seed", false, "Seed the database with sample data")
 	flag.Parse()
-	if *seed {
-		log.Println("Seeding the database with sample data...")
-	}
 
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, falling back to environment variables")
@@ -68,27 +65,25 @@ func main() {
 
 	dbConn, err := connectDB()
 	if err != nil {
-		log.Fatal("Error connecting to the database: ", err)
+		log.Fatalf("Failed to connect to the database: %v", err)
 	}
-	log.Println(dbConn.Stats())
 	defer dbConn.Close()
 
-	if err = dbConn.Ping(); err != nil {
-		log.Fatal("Error pinging the database: ", err)
-	}
+	log.Printf("Database connection stats: %+v", dbConn.Stats())
 	log.Println("Successfully connected to winebaby_db!")
 
 	if *seed {
 		log.Println("Seeding the database with sample data...")
 		if err := db.Seed(dbConn); err != nil {
-			log.Fatal("Error seeding the database: ", err)
+			log.Printf("Error seeding the database: %v", err)
+			return
 		}
 		log.Println("Database seeded successfully!")
 		return
 	}
 
 	r := chi.NewRouter()
-	r.Use(CORSMiddleware) 
+	r.Use(CORSMiddleware)
 	r.Mount("/", routes.RegisterRoutes(dbConn))
 
 	port := os.Getenv("PORT")
@@ -96,8 +91,8 @@ func main() {
 		port = "8080"
 	}
 
-	log.Println("Server running on port 8080")
-	if err := http.ListenAndServe(":8080", r); err != nil {
-		log.Fatal("Server failed: ", err)
+	log.Printf("Server running on port %s", port)
+	if err := http.ListenAndServe(":"+port, r); err != nil {
+		log.Fatalf("Server failed: %v", err)
 	}
 }
