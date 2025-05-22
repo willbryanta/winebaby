@@ -2,14 +2,35 @@ package db
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func Seed(db *sql.DB) error {
+	// Start a transaction to ensure atomicity
+	tx, err := db.Begin()
+	if err != nil {
+		log.Printf("Failed to start transaction: %v", err)
+		return err
+	}
+	defer func() {
+		if err != nil {
+			log.Printf("Rolling back transaction due to error: %v", err)
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+		if err != nil {
+			log.Printf("Failed to commit transaction: %v", err)
+		}
+	}()
+
+	// Seed users
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
 	if err != nil {
+		log.Printf("Failed to hash password: %v", err)
 		return err
 	}
 
@@ -20,18 +41,20 @@ func Seed(db *sql.DB) error {
 		{"user2", string(hashedPassword), "user2@example.com"},
 	}
 	for _, u := range users {
-		_, err := db.Exec(`INSERT INTO users (username, password, email) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+		log.Printf("Inserting user: %s", u.username)
+		_, err := tx.Exec(`INSERT INTO users (username, password, email) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
 			u.username, u.password, u.email)
 		if err != nil {
+			log.Printf("Failed to insert user %s: %v", u.username, err)
 			return err
 		}
 	}
 
-	// Insert sample wines
+	// Seed wines
 	wines := []struct {
 		name, manufacturer, region, wineType, colour string
 		year                                    int
-		alcoholContent, servingTemp, servingSize, price, rating float64
+		alcoholContent, servingTemp, servingSize, price, rating float32
 		servingSizeUnit, servingSizeUnitAbbreviation, servingSizeUnitDescription string
 		servingSizeUnitDescriptionAbbreviation, servingSizeUnitDescriptionPlural string
 	}{
@@ -51,10 +74,11 @@ func Seed(db *sql.DB) error {
 		},
 	}
 	for _, w := range wines {
-		_, err := db.Exec(`INSERT INTO wines (name, year, manufacturer, region, alcohol_content, serving_temp, 
+		log.Printf("Inserting wine: %s", w.name)
+		_, err := tx.Exec(`INSERT INTO wines (name, year, manufacturer, region, alcohol_content, serving_temp, 
                                             serving_size, serving_size_unit, serving_size_unit_abbreviation, 
                                             serving_size_unit_description, serving_size_unit_description_abbreviation, 
-											serving_size_unit_description_plural, price, rating, wineType, colour) 
+                                            serving_size_unit_description_plural, price, rating, type, colour) 
                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
                           ON CONFLICT DO NOTHING`,
 			w.name, w.year, w.manufacturer, w.region, w.alcoholContent, w.servingTemp, w.servingSize,
@@ -62,10 +86,12 @@ func Seed(db *sql.DB) error {
 			w.servingSizeUnitDescriptionAbbreviation, w.servingSizeUnitDescriptionPlural,
 			w.price, w.rating, w.wineType, w.colour)
 		if err != nil {
+			log.Printf("Failed to insert wine %s: %v", w.name, err)
 			return err
 		}
 	}
 
+	// Seed favorite_wines
 	favoriteWines := []struct {
 		username string
 		wineID   int
@@ -75,16 +101,18 @@ func Seed(db *sql.DB) error {
 		{"user2", 1},
 	}
 	for _, fw := range favoriteWines {
-		_, err := db.Exec(`INSERT INTO favorite_wines (user_id, wine_id) 
+		log.Printf("Inserting favorite wine for user %s, wine ID %d", fw.username, fw.wineID)
+		_, err := tx.Exec(`INSERT INTO favorite_wines (user_id, wine_id) 
                           SELECT id, $2 FROM users WHERE username = $1 
                           ON CONFLICT DO NOTHING`,
 			fw.username, fw.wineID)
 		if err != nil {
+			log.Printf("Failed to insert favorite wine for user %s, wine ID %d: %v", fw.username, fw.wineID, err)
 			return err
 		}
 	}
 
-
+	// Seed reviews
 	reviews := []struct {
 		username, comment, reviewDate, reviewDateTime, reviewDateTimeUTC, title, description string
 		userID, wineID, rating                                                      int
@@ -105,15 +133,18 @@ func Seed(db *sql.DB) error {
 		},
 	}
 	for _, r := range reviews {
-		_, err := db.Exec(`INSERT INTO reviews (user_id, wine_id, comment, review_date, review_date_time, 
+		log.Printf("Inserting review for user ID %d, wine ID %d", r.userID, r.wineID)
+		_, err := tx.Exec(`INSERT INTO reviews (user_id, wine_id, comment, review_date, review_date_time, 
                                               review_date_time_utc, title, description, rating) 
                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT DO NOTHING`,
 			r.userID, r.wineID, r.comment, r.reviewDate, r.reviewDateTime, r.reviewDateTimeUTC,
 			r.title, r.description, r.rating)
 		if err != nil {
+			log.Printf("Failed to insert review for user ID %d, wine ID %d: %v", r.userID, r.wineID, err)
 			return err
 		}
 	}
 
+	log.Println("Database seeding completed successfully")
 	return nil
 }
