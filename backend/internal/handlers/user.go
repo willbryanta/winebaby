@@ -20,6 +20,36 @@ import (
 var JWTSecret = []byte(os.Getenv("JWT_SECRET"))
 var JWTExpiration = 3600
 
+func VerifyToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Unauthorized"})
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Bad request"})
+		return
+	}
+	token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, http.ErrNoCookie
+		}
+		return JWTSecret, nil
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Unauthorized: " + err.Error()})
+		return
+	}
+	if !token.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Unauthorized: Invalid token"})
+		return
+	}
+}
+
 func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	var user models.User
 	w.Header().Set("Content-Type", "application/json")
