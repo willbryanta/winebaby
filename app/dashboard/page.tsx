@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NavBar from "../src/components/NavBar/NavBar";
 
 type Review = {
@@ -42,8 +42,40 @@ const reviews: Review[] = [
 ];
 
 const Dashboard: React.FC = () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/verify", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (res.ok) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Error verifying token:", error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    verifyToken();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
+  }
+  if (!isAuthenticated) {
     return (
       <p className="flex items-center justify-center h-screen">Access Denied</p>
     );
