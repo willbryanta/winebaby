@@ -20,6 +20,9 @@ export default function SignUpPage() {
       body: JSON.stringify({ username, password, email }),
     });
 
+    console.log("Response status:", res.status);
+    console.log("Response headers:", res.headers);
+
     let data;
     try {
       data = await res.json();

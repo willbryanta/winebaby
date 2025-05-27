@@ -98,8 +98,30 @@ func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainReposit
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id": 	 user.ID,
+		"username": user.Username,
+		"email":    user.Email,
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+	})
 
+	tokenString, err:= token.SignedString(JWTSecret)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to generate token: " + err.Error()})
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name: "token",
+		Value: tokenString,
+		Path: "/",
+		HttpOnly: true,
+		Secure: true,
+		MaxAge: 86400,
+	})
+
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
 }
 

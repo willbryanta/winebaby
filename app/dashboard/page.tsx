@@ -4,17 +4,6 @@ import React from "react";
 import NavBar from "../src/components/NavBar/NavBar";
 import { useSession } from "next-auth/react";
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
-      token?: string;
-    };
-  }
-}
-
 type Review = {
   ID: number;
   WineID: number;
