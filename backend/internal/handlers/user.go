@@ -17,17 +17,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var JWTSecret = os.Getenv("JWT_SECRET")
+var JWTSecret = []byte(os.Getenv("JWT_SECRET"))
 var JWTExpiration = 3600
-
-func GenerateJWT(username string) (string, error) {
-	claims := jwt.MapClaims{
-		"username": username,
-		"exp":      jwt.NewNumericDate(time.Now().Add(time.Duration(JWTExpiration) * time.Second)),
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(JWTSecret))
-}
 
 func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	var user models.User
@@ -162,15 +153,33 @@ func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.MainReposit
 		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
 		return
 	}
-	token, err := GenerateJWT(user.Username)
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id": 	 user.ID,
+		"username": user.Username,
+		"email":    user.Email,
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+	})
+
+	tokenString, err:= token.SignedString(JWTSecret)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to generate token"})
+		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to generate token: " + err.Error()})
 		return
 	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name: "token",
+		Value: tokenString,
+		Path: "/",
+		HttpOnly: true,
+		Secure: true,
+		MaxAge: 86400,
+	})
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"token": token})
+	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
 }
 
 func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
