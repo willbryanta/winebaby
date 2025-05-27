@@ -2,7 +2,6 @@
 
 import React from "react";
 import NavBar from "../src/components/NavBar/NavBar";
-import { useSession } from "next-auth/react";
 
 type Review = {
   ID: number;
@@ -43,16 +42,8 @@ const reviews: Review[] = [
 ];
 
 const Dashboard: React.FC = () => {
-  const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
-      </div>
-    );
-  }
-  if (!session) {
+  const token = localStorage.getItem("token");
+  if (!token) {
     return (
       <p className="flex items-center justify-center h-screen">Access Denied</p>
     );
