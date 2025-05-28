@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"regexp"
@@ -20,7 +21,7 @@ import (
 var JWTSecret = []byte(os.Getenv("JWT_SECRET"))
 var JWTExpiration = 3600
 
-func VerifyToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+func VerifyToken(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
@@ -34,7 +35,7 @@ func VerifyToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) 
 	}
 	token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, http.ErrNoCookie
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return JWTSecret, nil
 	})
@@ -138,7 +139,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainReposit
 		Value: tokenString,
 		Path: "/",
 		HttpOnly: true,
-		Secure: true,
+		Secure: false,
 		MaxAge: 86400,
 	})
 

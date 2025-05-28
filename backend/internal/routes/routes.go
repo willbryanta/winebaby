@@ -67,6 +67,9 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r.Get("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
 		handlers.GetUserReviewById(w, r, repo, db)})
 		
+	r.Get("/verify-token", func(w http.ResponseWriter, r *http.Request){
+		handlers.VerifyToken(w, r)
+	})
 
 	return r
 }
