@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const res = await fetch("http://localhost:8080/verify", {
+        const res = await fetch("http://localhost:8080/verify-token", {
           method: "GET",
           credentials: "include",
         });
