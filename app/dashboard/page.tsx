@@ -1,104 +1,109 @@
+// signin/page.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
-import NavBar from "../src/components/NavBar/NavBar";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-type Review = {
-  ID: number;
-  WineID: number;
-  Comment: string;
-  ReviewDate: string;
-  ReviewDateTime: string;
-  ReviewDateTimeUTC: string;
-  Title: string;
-  Description: string;
-  Rating: number;
-};
+export default function SignInPage() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-// TODO: Replace with actual data fetching logic
-const reviews: Review[] = [
-  {
-    ID: 1,
-    WineID: 101,
-    Comment: "Great wine, loved the taste!",
-    ReviewDate: "2023-10-01",
-    ReviewDateTime: "2023-10-01T12:00:00Z",
-    ReviewDateTimeUTC: "2023-10-01T12:00:00Z",
-    Title: "Amazing!",
-    Description: "This wine is fantastic. Highly recommend it.",
-    Rating: 5,
-  },
-  {
-    ID: 2,
-    WineID: 102,
-    Comment: "Not my favorite, but decent.",
-    ReviewDate: "2023-10-02",
-    ReviewDateTime: "2023-10-02T14:00:00Z",
-    ReviewDateTimeUTC: "2023-10-02T14:00:00Z",
-    Title: "Okay",
-    Description: "It was okay, but I've had better.",
-    Rating: 3,
-  },
-];
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-const Dashboard: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      try {
-        const res = await fetch("http://localhost:8080/verify-token", {
-          method: "GET",
-          credentials: "include",
-        });
+    if (!trimmedUsername || !trimmedPassword) {
+      setError("Username and password are required");
+      setLoading(false);
+      return;
+    }
 
-        if (res.ok) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error("Error verifying token:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    verifyToken();
-  }, []);
+    const res = await fetch("http://localhost:8080/verify-token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        username: trimmedUsername,
+        password: trimmedPassword,
+      }),
+    });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
-      </div>
-    );
-  }
-  if (!isAuthenticated) {
-    return (
-      <p className="flex items-center justify-center h-screen">Access Denied</p>
-    );
-  }
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      setError("Invalid response from server.");
+      setLoading(false);
+      return;
+    }
+
+    if (!res.ok) {
+      setError(data.message || "Something went wrong");
+      setLoading(false);
+      return;
+    }
+
+    router.push("/dashboard");
+    setLoading(false);
+  };
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-gray-100 overflow-hidden">
-      <NavBar />
-      <div className="flex-1 flex flex-col items-center overflow-y-auto py-6">
-        <h1 className="text-2xl font-bold mb-4">Wine Reviews Dashboard</h1>
-        <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mx-4">
-          {reviews.map((review) => (
-            <div key={review.ID} className="mb-4 p-4 border-b last:border-b-0">
-              <h2 className="text-xl font-semibold">{review.Title}</h2>
-              <p className="text-gray-600">{review.Comment}</p>
-              <p className="text-sm text-gray-500">{review.ReviewDate}</p>
-              <p className="text-sm text-gray-500">Rating: {review.Rating}/5</p>
-            </div>
-          ))}
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow-md w-96"
+      >
+        <h1 className="text-2xl font-bold mb-4 text-wine">Sign In</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <div className="mb-4">
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Username
+          </label>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-2 border rounded"
+            disabled={loading}
+          />
         </div>
-      </div>
+        <div className="mb-4">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border rounded"
+            disabled={loading}
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-wine hover:bg-wine-dark text-white font-semibold py-2 rounded disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? "Signing In..." : "Sign In"}
+        </button>
+      </form>
     </div>
   );
-};
-
-export default Dashboard;
+}

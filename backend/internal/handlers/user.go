@@ -148,69 +148,71 @@ func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainReposit
 }
 
 func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	var credentials struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&credentials)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
-		return
-	}
+    var credentials struct {
+        Username string `json:"username"`
+        Password string `json:"password"`
+    }
+    err := json.NewDecoder(r.Body).Decode(&credentials)
+    if err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
+        return
+    }
 
-	credentials.Username = strings.TrimSpace(credentials.Username)
-	credentials.Password = strings.TrimSpace(credentials.Password)
-	
-	if credentials.Username == "" || credentials.Password == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Username and password are required"})
-		return
-	}
-	user, err := repo.GetUserByUsername(credentials.Username)
-	if err != nil {	
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to fetch user: " + err.Error()})
-		return
-	}
-	if user.Username == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
-		return
-	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
-		return
-	}
+    credentials.Username = strings.TrimSpace(credentials.Username)
+    credentials.Password = strings.TrimSpace(credentials.Password)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": 	 user.ID,
-		"username": user.Username,
-		"email":    user.Email,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
-	})
+    if credentials.Username == "" || credentials.Password == "" {
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Username and password are required"})
+        return
+    }
 
-	tokenString, err:= token.SignedString(JWTSecret)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to generate token: " + err.Error()})
-		return
-	}
+    user, err := repo.GetUserByUsername(credentials.Username)
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Failed to fetch user: " + err.Error()})
+        return
+    }
+    if user.Username == "" {
+        w.WriteHeader(http.StatusUnauthorized)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
+        return
+    }
 
-	http.SetCookie(w, &http.Cookie{
-		Name: "token",
-		Value: tokenString,
-		Path: "/",
-		HttpOnly: true,
-		Secure: true,
-		MaxAge: 86400,
-	})
+    err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
+    if err != nil {
+        w.WriteHeader(http.StatusUnauthorized)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Invalid username or password"})
+        return
+    }
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+        "id":       user.ID,
+        "username": user.Username,
+        "email":    user.Email,
+        "exp":      time.Now().Add(time.Hour * 24).Unix(),
+    })
+
+    tokenString, err := token.SignedString(JWTSecret)
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Failed to generate token: " + err.Error()})
+        return
+    }
+
+    http.SetCookie(w, &http.Cookie{
+        Name:     "token",
+        Value:    tokenString,
+        Path:     "/",
+        HttpOnly: true,
+        Secure:   false,
+        MaxAge:   86400,
+    })
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(map[string]string{"message": "Sign-in successful"})
 }
 
 func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
