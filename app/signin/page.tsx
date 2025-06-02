@@ -29,6 +29,7 @@ export default function SignInPage() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         username: trimmedUsername,
         password: trimmedPassword,
