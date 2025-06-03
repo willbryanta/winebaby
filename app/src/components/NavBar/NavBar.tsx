@@ -19,6 +19,7 @@ export default function NavBar() {
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
+          router.push("/signin");
         }
       } catch (error) {
         console.error("Error checking session:", error);
