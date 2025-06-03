@@ -215,6 +215,20 @@ func SignIn(w http.ResponseWriter, r *http.Request, repo *repository.MainReposit
     json.NewEncoder(w).Encode(map[string]string{"message": "Sign-in successful"})
 }
 
+func SignOut(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name: "token",
+		Value: "",
+		Path: "/",
+		HttpOnly: true,
+		Secure: false,
+		MaxAge: -1,
+	})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Sign-out successful"})
+}
+
 func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
