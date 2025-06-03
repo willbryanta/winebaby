@@ -1,10 +1,52 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function NavBar() {
-  const { data: session, status } = useSession();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/verify-token", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (res.ok) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        setIsAuthenticated(false);
+      }
+    };
+    checkSession();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/signout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      document.cookie =
+        "token=; Max-Age=0; path=/; domain=localhost; SameSite=Lax";
+      if (res.ok) {
+        setIsAuthenticated(false);
+        router.push("/");
+      } else {
+        console.error("Sign out failed");
+      }
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   return (
     <nav className="bg-wine dark:bg-wine-dark text-white p-4 shadow-md">
@@ -17,9 +59,9 @@ export default function NavBar() {
             Home
           </Link>
         </li>
-        {status === "loading" ? (
+        {isAuthenticated === null ? (
           <li>Loading...</li>
-        ) : session ? (
+        ) : isAuthenticated ? (
           <>
             <li>
               <Link
@@ -31,7 +73,7 @@ export default function NavBar() {
             </li>
             <li>
               <button
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={handleSignOut}
                 className="bg-grape hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
               >
                 Sign out
@@ -39,20 +81,24 @@ export default function NavBar() {
             </li>
           </>
         ) : (
-          <li>
-            <Link
-              href="/signin"
-              className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="hover:text-wine-light transition-colors duration-200 font-semibold py-2 px-4 rounded-md inline-block"
-            >
-              Sign up
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link
+                href="/signin"
+                className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
+              >
+                Sign in
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/signup"
+                className="hover:text-wine-light transition-colors duration-200 font-semibold py-2 px-4 rounded-md inline-block"
+              >
+                Sign up
+              </Link>
+            </li>
+          </>
         )}
       </ul>
     </nav>

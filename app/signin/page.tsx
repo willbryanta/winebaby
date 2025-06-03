@@ -39,6 +39,10 @@ export default function SignInPage() {
     let data;
     try {
       data = await res.json();
+
+      if (!data || !data.message) {
+        throw new Error("Invalid response format");
+      }
     } catch {
       setError("Invalid response from server.");
       setLoading(false);
@@ -47,7 +51,6 @@ export default function SignInPage() {
     if (!res.ok) {
       setError(data.message || "Something went wrong");
     } else {
-      localStorage.setItem("token", data.token);
       router.push("/dashboard");
     }
     setLoading(false);
