@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function NavBar() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -27,7 +27,7 @@ export default function NavBar() {
       }
     };
     checkSession();
-  }, []);
+  }, [router]);
 
   const handleSignOut = async () => {
     try {
