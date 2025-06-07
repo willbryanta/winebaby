@@ -56,6 +56,24 @@ export default function UserSettingsPage() {
         <Link href="/userProfile" className="text-blue-500 hover:underline">
           View Profile
         </Link>
+        <Link
+          href="/changePassword"
+          className="text-blue-500 hover:underline ml-4"
+        >
+          Change Password
+        </Link>
+        <Link
+          href="/changeEmail"
+          className="text-blue-500 hover:underline ml-4"
+        >
+          Change Email
+        </Link>
+        <Link
+          href="/changeUsername"
+          className="text-blue-500 hover:underline ml-4"
+        >
+          Change Username
+        </Link>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import NavBar from "../src/components/NavBar/NavBar";
+import NavBar from "../../src/components/NavBar/NavBar";
 
 type UserProfile = {
   username: string;
