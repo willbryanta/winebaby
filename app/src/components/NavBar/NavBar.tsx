@@ -80,6 +80,22 @@ export default function NavBar() {
                 Sign out
               </button>
             </li>
+            <li>
+              <Link
+                href="/userProfile"
+                className="hover:text-wine-light transition-colors duration-200 py-2 px-4"
+              >
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/settings"
+                className="hover:text-wine-light transition-colors duration-200 py-2 px-4"
+              >
+                Settings
+              </Link>
+            </li>
           </>
         ) : (
           <>
