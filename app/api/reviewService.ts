@@ -2,7 +2,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL as string | undefined;
 const TOKEN_KEY = import.meta.env.VITE_JWT_KEY as string | undefined;
 
 interface ReviewResponse {
-  data?: string; //Might have to double check whether this is right
+  data?: string;
   error?: string;
 }
 
@@ -20,8 +20,7 @@ const createReview = async (
     if (!TOKEN_KEY) {
       throw new Error("Token key is not configured");
     }
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null; // May not need this
+    const token = localStorage.getItem(TOKEN_KEY);
     const res = await fetch(`${BACKEND_URL}/reviews`, {
       method: "POST",
       headers: {
@@ -52,8 +51,7 @@ const getReview = async (review: string): Promise<ReviewResponse> => {
     if (!TOKEN_KEY) {
       throw new Error("Token key is not configured");
     }
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null; //May not need this
+    const token = localStorage.getItem(TOKEN_KEY);
     const res = await fetch(
       `${BACKEND_URL}/reviews?review=${encodeURIComponent(review)}`,
       {
@@ -123,8 +121,7 @@ const deleteReview = async (
     if (!TOKEN_KEY) {
       throw new Error("Token key is not configured");
     }
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null; // May not need this
+    const token = localStorage.getItem(TOKEN_KEY);
     const res = await fetch(`${BACKEND_URL}/reviews/${reviewId}`, {
       method: "DELETE",
       headers: {
