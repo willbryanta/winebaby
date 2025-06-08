@@ -6,7 +6,7 @@ type User = {
 };
 
 interface ProfileResponse {
-  data?: string; //Might have to double check whether this is right
+  data?: string;
   error?: string;
 }
 
@@ -27,8 +27,7 @@ const getProfile = async (user: User): Promise<ProfileResponse> => {
     throw new Error("Backend URL is not configured properly");
   }
 
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
+  const token = localStorage.getItem(TOKEN_KEY);
   try {
     const res = await fetch(`${BACKEND_URL}/users/${user.ID}`, {
       headers: {
