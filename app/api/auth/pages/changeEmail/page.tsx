@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import NavBar from "@/app/src/components/NavBar/NavBar";
-import Link from "next/link";
+import NavBar from "@/app/api/auth/components/NavBar";
 import { useRouter } from "next/navigation";
 
-export default function ChangeUsernamePage() {
+export default function ChangeEmailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -15,12 +14,10 @@ export default function ChangeUsernamePage() {
     setIsLoading(false);
   }, []);
 
-  const handleChangeUsername = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleChangeEmail = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const newUsername = formData.get("newUsername") as string;
+    const newEmail = formData.get("newEmail") as string;
 
     try {
       const response = await fetch("http://localhost:8080/api/users/profile", {
@@ -29,18 +26,18 @@ export default function ChangeUsernamePage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username: newUsername }),
+        body: JSON.stringify({ email: newEmail }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to change username");
+        throw new Error("Failed to change email");
       }
 
-      setMessage("Username changed successfully!");
+      setMessage("Email changed successfully!");
       setError(null);
       router.push("/userSettings");
     } catch (error) {
-      console.error("Error changing username:", error);
+      console.error("Error changing email:", error);
       setError(
         error instanceof Error ? error.message : "An unexpected error occurred"
       );
@@ -55,22 +52,22 @@ export default function ChangeUsernamePage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <NavBar />
-      <h1 className="text-2xl font-bold mb-4">Change Username</h1>
+      <h1 className="text-2xl font-bold mb-4">Change Email</h1>
       <form
-        onSubmit={handleChangeUsername}
+        onSubmit={handleChangeEmail}
         className="bg-white shadow-md rounded-lg p-6 w-full max-w-md"
       >
         <div className="mb-4">
           <label
-            htmlFor="newUsername"
+            htmlFor="newEmail"
             className="block text-sm font-medium text-gray-700"
           >
-            New Username
+            New Email
           </label>
           <input
-            type="text"
-            id="newUsername"
-            name="newUsername"
+            type="email"
+            name="newEmail"
+            id="newEmail"
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
@@ -79,14 +76,11 @@ export default function ChangeUsernamePage() {
         {error && <p className="text-red-600">{error}</p>}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200"
+          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition-colors duration-200"
         >
-          Change Username
+          Change Email
         </button>
       </form>
-      <Link href="/userSettings" className="mt-4 text-blue-500 hover:underline">
-        Back to Settings
-      </Link>
     </div>
   );
 }

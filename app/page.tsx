@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import NavBar from "./src/components/NavBar/NavBar";
+import NavBar from "./api/auth/components/NavBar";
 
 export default function HomePage() {
   return (

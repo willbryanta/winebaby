@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import NavBar from "../src/components/NavBar/NavBar";
+import NavBar from "./NavBar";
 
 type Review = {
   ID: number;
