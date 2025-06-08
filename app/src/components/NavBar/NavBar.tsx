@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function NavBar() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [username, setUsername] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -17,6 +18,8 @@ export default function NavBar() {
         });
         if (res.ok) {
           setIsAuthenticated(true);
+          const data = await res.json();
+          setUsername(data.username || "");
         } else {
           setIsAuthenticated(false);
           router.push("/signin");
@@ -28,6 +31,7 @@ export default function NavBar() {
     };
     checkSession();
   }, [router]);
+
 
   const handleSignOut = async () => {
     try {
@@ -82,7 +86,7 @@ export default function NavBar() {
             </li>
             <li>
               <Link
-                href="/userProfile"
+                href={`/users/${username}`}
                 className="hover:text-wine-light transition-colors duration-200 py-2 px-4"
               >
                 Profile
