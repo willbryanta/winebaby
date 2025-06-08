@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import NavBar from "../../../src/components/NavBar/NavBar";
+import NavBar from "@/app/src/components/NavBar/NavBar";
 import { useRouter } from "next/navigation";
 
 export default function ChangeEmailPage() {

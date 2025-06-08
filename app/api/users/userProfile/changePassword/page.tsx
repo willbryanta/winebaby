@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import NavBar from "../../../src/components/NavBar/NavBar";
+import NavBar from "@/app/src/components/NavBar/NavBar";
 import Link from "next/link";
 
 export default function ChangePasswordPage() {

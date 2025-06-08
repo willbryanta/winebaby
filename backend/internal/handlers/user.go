@@ -264,6 +264,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request, repo *repository.MainRep
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User deleted successfully"})
 }
+
 func GetUserFavoriteWines(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	username := r.URL.Path[len("/api/users/"):]
 	favoriteWines, err := repo.GetUserFavoriteWines(username)
@@ -276,6 +277,7 @@ func GetUserFavoriteWines(w http.ResponseWriter, r *http.Request, repo *reposito
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(favoriteWines)
 }
+
 func AddUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	var wine models.Wine
 	err := json.NewDecoder(r.Body).Decode(&wine)
@@ -309,6 +311,7 @@ func AddUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repositor
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Favorite wine added successfully"})
 }
+
 func RemoveUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	userID := chi.URLParam(r, "userID") 
 	wineID := chi.URLParam(r, "wineID")
@@ -347,6 +350,7 @@ func GetUserReviews(w http.ResponseWriter, r *http.Request, repo *repository.Mai
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(reviews)
 }
+
 func CreateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	var review models.Review
 	err := json.NewDecoder(r.Body).Decode(&review)
@@ -365,6 +369,7 @@ func CreateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.M
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User review created successfully"})
 }
+
 func UpdateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	var review models.Review
 	err := json.NewDecoder(r.Body).Decode(&review)
@@ -383,6 +388,7 @@ func UpdateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.M
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User review updated successfully"})
 }
+
 func DeleteUserReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	reviewIdStr := chi.URLParam(r, "reviewId")
 	reviewId, err := strconv.Atoi(reviewIdStr)
@@ -400,6 +406,7 @@ func DeleteUserReview(w http.ResponseWriter, r *http.Request, repo *repository.M
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User review deleted successfully"})
 }
+
 func GetUserReviewById(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	reviewIdStr := chi.URLParam(r, "reviewId")
 	reviewId, err := strconv.Atoi(reviewIdStr)
