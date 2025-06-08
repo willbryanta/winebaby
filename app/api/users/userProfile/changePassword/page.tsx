@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import NavBar from "@/app/src/components/NavBar/NavBar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ChangePasswordPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setIsLoading(false);
@@ -22,13 +24,13 @@ export default function ChangePasswordPage() {
     const newPassword = formData.get("newPassword") as string;
 
     try {
-      const response = await fetch("http://localhost:8080/change-password", {
-        method: "POST",
+      const response = await fetch("http://localhost:8080/api/users/profile", {
+        method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ oldPassword, newPassword }),
+        body: JSON.stringify({ oldPassword, password: newPassword }),
       });
 
       if (!response.ok) {
@@ -37,6 +39,7 @@ export default function ChangePasswordPage() {
 
       setMessage("Password changed successfully!");
       setError(null);
+      router.push("/userSettings");
     } catch (error) {
       console.error("Error changing password:", error);
       setError(

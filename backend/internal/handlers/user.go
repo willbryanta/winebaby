@@ -244,6 +244,30 @@ func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.
 		return
 	}
 
+	// If password is provided, verify old password
+	if user.Password != "" {
+		var reqBody struct {
+			OldPassword string `json:"old_password"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil || reqBody.OldPassword == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Old password required for password change"})
+			return
+		}
+		// Fetch the user from the database to get the current hashed password
+		existingUser, err := repo.GetUserByUsername(user.Username)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to fetch user for password verification"})
+			return
+		}
+		if err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(reqBody.OldPassword)); err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid old password"})
+			return
+		}
+	}
+
 	if err := repo.UpdateUserProfile(user); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to update user profile"})
@@ -253,6 +277,7 @@ func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User profile updated successfully"})
 }
+
 func DeleteUser(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	username := r.URL.Path[len("/api/users/"):]
 	if err := repo.DeleteUser(username); err != nil {

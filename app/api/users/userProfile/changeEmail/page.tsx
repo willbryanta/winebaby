@@ -20,13 +20,13 @@ export default function ChangeEmailPage() {
     const newEmail = formData.get("newEmail") as string;
 
     try {
-      const response = await fetch("http://localhost:8080/change-email", {
-        method: "POST",
+      const response = await fetch("http://localhost:8080/api/users/profile", {
+        method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ newEmail }),
+        body: JSON.stringify({ email: newEmail }),
       });
 
       if (!response.ok) {

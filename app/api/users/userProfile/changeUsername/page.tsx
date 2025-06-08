@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import NavBar from "@/app/src/components/NavBar/NavBar";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function ChangeUsernamePage() {
@@ -22,13 +23,13 @@ export default function ChangeUsernamePage() {
     const newUsername = formData.get("newUsername") as string;
 
     try {
-      const response = await fetch("http://localhost:8080/change-username", {
-        method: "POST",
+      const response = await fetch("http://localhost:8080/api/users/profile", {
+        method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ newUsername }),
+        body: JSON.stringify({ username: newUsername }),
       });
 
       if (!response.ok) {
@@ -78,11 +79,14 @@ export default function ChangeUsernamePage() {
         {error && <p className="text-red-600">{error}</p>}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200"
         >
           Change Username
         </button>
       </form>
+      <Link href="/userSettings" className="mt-4 text-blue-500 hover:underline">
+        Back to Settings
+      </Link>
     </div>
   );
 }
