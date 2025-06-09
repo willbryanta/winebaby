@@ -2,18 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import NavBar from "./NavBar";
-
-type Review = {
-  ID: number;
-  WineID: number;
-  Comment: string;
-  ReviewDate: string;
-  ReviewDateTime: string;
-  ReviewDateTimeUTC: string;
-  Title: string;
-  Description: string;
-  Rating: number;
-};
+import { Review } from "@/app/api/auth/types/page";
 
 // TODO: Replace with actual data fetching logic
 const reviews: Review[] = [

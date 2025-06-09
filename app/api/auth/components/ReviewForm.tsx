@@ -2,14 +2,7 @@
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-
-interface FormData {
-  WineID: number | null;
-  Winemaker: string;
-  Title: string;
-  Description: string;
-  Rating: number;
-}
+import { FormData } from "@/app/api/auth/types/page";
 
 export default function ReviewForm() {
   const router = useRouter();

@@ -3,26 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-
-interface Wine {
-  id: string;
-  name: string;
-  region: string;
-}
-
-interface Review {
-  id: string;
-  wineName: string;
-  rating: number;
-  comment: string;
-}
-
-interface UserProfile {
-  username: string;
-  email: string;
-  favoriteWines: Wine[];
-  reviews: Review[];
-}
+import { UserProfile } from "@/app/api/auth/types/page";
 
 export default function UserProfilePage() {
   const { username } = useParams();
@@ -30,7 +11,6 @@ export default function UserProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch user profile data
   useEffect(() => {
     if (!username) return;
 
@@ -73,7 +53,6 @@ export default function UserProfilePage() {
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        {/* Profile Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h1 className="text-3xl font-bold text-wine mb-2">
             {profile.username}
@@ -87,7 +66,6 @@ export default function UserProfilePage() {
           </Link>
         </div>
 
-        {/* Favorite Wines Section */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-semibold text-wine mb-4">
             Favorite Wines
@@ -108,7 +86,6 @@ export default function UserProfilePage() {
           )}
         </div>
 
-        {/* Reviews Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold text-wine mb-4">
             Wine Reviews
@@ -120,12 +97,12 @@ export default function UserProfilePage() {
               {profile.reviews.map((review) => (
                 <li key={review.id} className="border-b pb-2">
                   <h3 className="text-lg font-medium text-gray-800">
-                    {review.wineName}
+                    {review.Title}
                   </h3>
                   <p className="text-yellow-500">
-                    {"★".repeat(review.rating)} {"☆".repeat(5 - review.rating)}
+                    {"★".repeat(review.Rating)} {"☆".repeat(5 - review.Rating)}
                   </p>
-                  <p className="text-gray-600">{review.comment}</p>
+                  <p className="text-gray-600">{review.Comment}</p>
                 </li>
               ))}
             </ul>

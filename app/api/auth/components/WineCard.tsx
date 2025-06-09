@@ -2,22 +2,9 @@
 
 import React from "react";
 import Image from "next/image";
-
-interface WineProperties {
-  WineID: number;
-  Title: string;
-  Year: number;
-  Winemaker: string;
-  Type: string;
-  Colour: string;
-}
-
-interface WineCardProps {
-  wineProperties: WineProperties;
-}
+import { WineCardProps } from "@/app/api/auth/types/page";
 
 export default function WineCard({ wineProperties }: WineCardProps) {
-  // May want to destructure properties individually i.e. Title, Manufacturer, WineID etc...
   const { WineID, Title, Year, Winemaker, Type, Colour } = wineProperties;
 
   return (
