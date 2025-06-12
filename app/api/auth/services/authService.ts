@@ -125,3 +125,60 @@ export const signup = async (
     return { success: false, error: "An unexpected error occurred" };
   }
 };
+
+export const changePassword = async (
+  oldPassword: string,
+  newPassword: string
+): Promise<{ success: boolean; error?: string }> => {
+  if (!oldPassword || !newPassword) {
+    return { success: false, error: "Both passwords are required" };
+  }
+
+  try {
+    const response = await fetch("/users/profile", {
+      method: "PUT",
+      credentials: "include", // Maintains session cookies
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ oldPassword, password: newPassword }),
+    });
+
+    if (!response.ok) {
+      return { success: false, error: "Failed to change password" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Change password error:", error);
+    return { success: false, error: "An unexpected error occurred" };
+  }
+};
+export const changeUsername = async (
+  newUsername: string
+): Promise<{ success: boolean; error?: string }> => {
+  if (!newUsername) {
+    return { success: false, error: "Username is required" };
+  }
+
+  try {
+    const response = await fetch("/users/profile", {
+      method: "PUT",
+      credentials: "include", // Maintains session cookies
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: newUsername }),
+    });
+
+    if (!response.ok) {
+      return { success: false, error: "Failed to change username" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Change username error:", error);
+    return { success: false, error: "An unexpected error occurred" };
+  }
+}
+
