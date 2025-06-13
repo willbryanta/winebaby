@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import NavBar from "@/app/api/NavBar/NavBar";
 import { Review } from "@/app/api/auth/types/page";
+import NavBar from "@/app/api/components/NavBar";
 
 // TODO: Replace with actual data fetching logic
 const reviews: Review[] = [
