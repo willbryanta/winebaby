@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import NavBar from "@/app/api/auth/components/NavBar";
+import NavBar from "@/app/api/components/NavBar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 

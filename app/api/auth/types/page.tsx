@@ -1,5 +1,6 @@
 "use client";
 
+//TODO - update optional fields based on UI requirements
 export type Review = {
   ID: number;
   WineID?: number;
