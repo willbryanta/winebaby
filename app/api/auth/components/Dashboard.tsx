@@ -9,23 +9,21 @@ const reviews: Review[] = [
   {
     ID: 1,
     WineID: 101,
-    Comment: "Great wine, loved the taste!",
+    Content: "Great wine, loved the taste!",
     ReviewDate: "2023-10-01",
     ReviewDateTime: "2023-10-01T12:00:00Z",
     ReviewDateTimeUTC: "2023-10-01T12:00:00Z",
     Title: "Amazing!",
-    Description: "This wine is fantastic. Highly recommend it.",
     Rating: 5,
   },
   {
     ID: 2,
     WineID: 102,
-    Comment: "Not my favorite, but decent.",
+    Content: "Not my favorite, but decent.",
     ReviewDate: "2023-10-02",
     ReviewDateTime: "2023-10-02T14:00:00Z",
     ReviewDateTimeUTC: "2023-10-02T14:00:00Z",
     Title: "Okay",
-    Description: "It was okay, but I've had better.",
     Rating: 3,
   },
 ];
@@ -79,7 +77,7 @@ const Dashboard: React.FC = () => {
           {reviews.map((review) => (
             <div key={review.ID} className="mb-4 p-4 border-b last:border-b-0">
               <h2 className="text-xl font-semibold">{review.Title}</h2>
-              <p className="text-gray-600">{review.Comment}</p>
+              <p className="text-gray-600">{review.Content}</p>
               <p className="text-sm text-gray-500">{review.ReviewDate}</p>
               <p className="text-sm text-gray-500">Rating: {review.Rating}/5</p>
             </div>

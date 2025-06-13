@@ -1,16 +1,6 @@
 "use client";
 
-export interface SignInResponse {
-  message: string;
-}
-
-export interface SignInError {
-  message: string;
-}
-
-export interface SignUpResponse {
-  message: string;
-}
+import { SignInResponse } from "../types/page";
 
 export const signin = async (
   username: string,
@@ -180,5 +170,4 @@ export const changeUsername = async (
     console.error("Change username error:", error);
     return { success: false, error: "An unexpected error occurred" };
   }
-}
-
+};

@@ -58,3 +58,15 @@ export interface Wine {
   color?: string;
   imageUrl?: string;
 }
+
+export interface SignInResponse {
+  message: string;
+}
+
+export interface SignInError {
+  message: string;
+}
+
+export interface SignUpResponse {
+  message: string;
+}
