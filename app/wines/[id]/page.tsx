@@ -1,29 +1,5 @@
 import React, { useState } from "react";
-
-interface Review {
-  id: number;
-  content: string;
-}
-
-interface Wine {
-  id: number;
-  name: string;
-  year: number;
-  manufacturer: string;
-  region: string;
-  alcoholContent: number;
-  servingTemp: number;
-  servingSize: number;
-  servingSizeUnit: string;
-  price: number;
-  rating?: number; // user's rating
-  reviews: Review[];
-  reviewCount: number;
-  averageRating: number;
-  type: string; // e.g., "red", "white", "sparkling"
-  color: string; // e.g., "red", "white", "rose"
-  imageUrl?: string; // optional image URL
-}
+import { Wine, Review } from "@/app/api/auth/types/page";
 
 const wines: Wine[] = [
   {
@@ -39,8 +15,8 @@ const wines: Wine[] = [
     price: 45,
     rating: 4.5,
     reviews: [
-      { id: 1, content: "Rich and full-bodied with hints of blackberry." },
-      { id: 2, content: "A bit too dry for my taste." },
+      { ID: 1, Content: "Rich and full-bodied with hints of blackberry." },
+      { ID: 2, Content: "A bit too dry for my taste." },
     ],
     reviewCount: 2,
     averageRating: 4.0,
@@ -61,8 +37,8 @@ const wines: Wine[] = [
     price: 30,
     rating: 4.2,
     reviews: [
-      { id: 3, content: "Smooth and buttery with a touch of oak." },
-      { id: 4, content: "Perfect for a summer evening." },
+      { ID: 3, Content: "Smooth and buttery with a touch of oak." },
+      { ID: 4, Content: "Perfect for a summer evening." },
     ],
     reviewCount: 2,
     averageRating: 4.1,
@@ -87,15 +63,15 @@ const WineList: React.FC = () => {
           style={{ border: "1px solid #ccc", margin: "10px", padding: "10px" }}
         >
           <h2
-            onClick={() => toggleExpand(wine.id)}
+            onClick={() => wine.id !== undefined && toggleExpand(wine.id)}
             style={{ cursor: "pointer" }}
           >
             {wine.name}
           </h2>
           {expandedWineId === wine.id && (
             <ul>
-              {wine.reviews.map((review) => (
-                <li key={review.id}>{review.content}</li>
+              {wine.reviews.map((review: Review) => (
+                <li key={review.ID}>{review.Content}</li>
               ))}
             </ul>
           )}

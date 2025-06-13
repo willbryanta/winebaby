@@ -95,14 +95,15 @@ export default function UserProfilePage() {
           ) : (
             <ul className="space-y-4">
               {profile.reviews.map((review) => (
-                <li key={review.id} className="border-b pb-2">
+                <li key={review.ID} className="border-b pb-2">
                   <h3 className="text-lg font-medium text-gray-800">
                     {review.Title}
                   </h3>
                   <p className="text-yellow-500">
-                    {"★".repeat(review.Rating)} {"☆".repeat(5 - review.Rating)}
+                    {"★".repeat(review.Rating ?? 0)}{" "}
+                    {"☆".repeat(5 - (review.Rating ?? 0))}
                   </p>
-                  <p className="text-gray-600">{review.Comment}</p>
+                  <p className="text-gray-600">{review.Content}</p>
                 </li>
               ))}
             </ul>
