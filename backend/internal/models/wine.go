@@ -7,9 +7,6 @@ type Wine struct {
 	Manufacturer	string 	`json:"manufacturer"`
 	Region			string 	`json:"region"`
 	AlcoholContent	float32	`json:"alcohol_content"`
-	ServingTemp	float32	`json:"serving_temp"`
-	ServingSize	float32	`json:"serving_size"`
-	ServingSizeUnit	string	`json:"serving_size_unit"`
 	Price			float32	`json:"price"`
 	Rating			float32	`json:"rating"`
 	Reviews			[]Review	`json:"reviews"`
