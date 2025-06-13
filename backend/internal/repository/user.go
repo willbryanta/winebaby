@@ -47,16 +47,16 @@ func (r *MainRepository) GetUserByUsername(username string) (models.User, error)
 	return user, nil
 }
 
-func (r *MainRepository) GetUserProfile(username string) (models.UserProfile, error) {
+func (r *MainRepository) GetUserProfile(username string) (models.User, error) {
 	userQuery := `SELECT id, username, email FROM users WHERE username = $1`
-	var user models.UserProfile
+	var user models.User
 	var email sql.NullString
 	err := r.DB.QueryRow(userQuery, username).Scan(&user.ID, &user.Username, &email)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return models.UserProfile{}, nil
+			return models.User{}, nil
 		}
-		return models.UserProfile{}, err
+		return models.User{}, err
 	}
 	if email.Valid {
 		user.Email = &email.String
@@ -69,7 +69,7 @@ func (r *MainRepository) GetUserProfile(username string) (models.UserProfile, er
                    FROM favorite_wines WHERE user_id = $1`
 	rows, err := r.DB.Query(winesQuery, user.ID)
 	if err != nil {
-		return models.UserProfile{}, err
+		return models.User{}, err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -87,7 +87,7 @@ func (r *MainRepository) GetUserProfile(username string) (models.UserProfile, er
 			&wine.Colour,
 		)
 		if err != nil {
-			return models.UserProfile{}, err
+			return models.User{}, err
 		}
 		user.FavoriteWines = append(user.FavoriteWines, wine)
 	}
@@ -97,7 +97,7 @@ func (r *MainRepository) GetUserProfile(username string) (models.UserProfile, er
                      FROM reviews WHERE user_id = $1`
 	rows, err = r.DB.Query(reviewsQuery, user.ID)
 	if err != nil {
-		return models.UserProfile{}, err
+		return models.User{}, err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -114,7 +114,7 @@ func (r *MainRepository) GetUserProfile(username string) (models.UserProfile, er
 			&review.Rating,
 		)
 		if err != nil {
-			return models.UserProfile{}, err
+			return models.User{}, err
 		}
 		user.Reviews = append(user.Reviews, review)
 	}
