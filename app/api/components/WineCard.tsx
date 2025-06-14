@@ -30,14 +30,15 @@ export default function WineCard(
             <div className="mt-2">
               <p className="text-sm text-gray-500 font-semibold">Reviews:</p>
               <div className="pl-4 space-y-2">
-                {reviews.map((review: Review) => (
-                  <div key={review.ID} className="text-sm text-gray-500">
-                    <h3 className="font-medium">{review.Title}</h3>
-                    <p>{review.Content}</p>
-                    <p>Rating: {review.Rating}/5</p>
-                    <p>Date: {review.ReviewDate}</p>
-                  </div>
-                ))}
+                {wine.reviews &&
+                  wine.reviews.map((review: Review) => (
+                    <div key={review.ID} className="text-sm text-gray-500">
+                      <h3 className="font-medium">{review.Title}</h3>
+                      <p>{review.Content}</p>
+                      <p>Rating: {review.Rating}/5</p>
+                      <p>Date: {review.ReviewDate}</p>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
