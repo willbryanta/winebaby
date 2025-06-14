@@ -1,27 +1,19 @@
 "use client";
 import React from "react";
 import NavBar from "./api/components/NavBar";
-import Image from "next/image";
 
-export default function HomePage() {
+export default function Dashboard() {
   return (
-    <>
-      <div className="flex justify-center p-4 bg-gray-100">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-wine">Welcome to WineBaby</h1>
-          <p className="text-lg text-gray-700">
-            Your one-stop destination for wine enthusiasts.
-          </p>
-        </div>
-      </div>
+    <div className="w-screen h-screen flex flex-col bg-gray-100">
       <NavBar />
-      <Image
-        width={1920}
-        height={1080}
-        src="/public/images/winebaby-graphic.avif"
-        alt="WineBaby Logo"
-        className="mt-4 w-48 h-auto"
-      />
-    </>
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <h1 className="text-[4.8rem] font-bold text-wine">
+          Welcome to WineBaby
+        </h1>
+        <p className="text-[2.2rem] text-gray-700">
+          Your one-stop destination for wine enthusiasts.
+        </p>
+      </div>
+    </div>
   );
 }

@@ -22,7 +22,10 @@ export default function SettingsPage() {
               </Link>
             </li>
             <li>
-              <Link href="/privacy" className="text-blue-500 hover:underline">
+              <Link
+                href="/privacyPolicy"
+                className="text-blue-500 hover:underline"
+              >
                 Privacy Policy
               </Link>
             </li>

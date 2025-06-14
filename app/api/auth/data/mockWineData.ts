@@ -34,7 +34,8 @@ export const wines: Wine[] = [
     averageRating: 4.5,
     type: "Cabernet Sauvignon",
     color: "Red",
-    imageUrl: "https://example.com/images/lafite-rothschild.jpg",
+    imageUrl:
+      "https://vader-prod.s3.amazonaws.com/1663364232-penfolds-rwt-shiraz-wine-1591817345.jpg",
   },
   {
     id: 2,
