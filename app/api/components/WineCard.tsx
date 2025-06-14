@@ -1,14 +1,10 @@
 "use client";
 
 import { Wine } from "../auth/types/page";
-import { ReviewCardProps } from "../auth/types/page";
 import { WineCardProps } from "../auth/types/page";
 import { Review } from "../auth/types/page";
 
-export default function WineCard(
-  { wines }: WineCardProps,
-  { reviews }: ReviewCardProps = { reviews: [] }
-) {
+export default function WineCard({ wines }: WineCardProps) {
   return (
     <div className="flex-1 flex flex-col items-center overflow-y-auto py-6">
       <h1 className="text-2xl font-bold mb-4">Wine Dashboard</h1>

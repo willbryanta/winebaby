@@ -60,7 +60,7 @@ export type Wine = {
   rating?: number; // user's rating
   reviews: Review[];
   reviewCount?: number;
-  averageRating: number;
+  averageRating: number | null;
   type?: string;
   color?: string;
   imageUrl?: string;
