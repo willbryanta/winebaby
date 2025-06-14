@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import NavBar from "./api/components/NavBar";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
@@ -10,6 +11,13 @@ export default function HomePage() {
         Your one-stop destination for wine enthusiasts.
       </p>
       <NavBar />
+      <Image
+        width={1920}
+        height={1080}
+        src="/public/images/winebaby-graphic.avif"
+        alt="WineBaby Logo"
+        className="mt-4 w-48 h-auto"
+      />
     </div>
   );
 }
