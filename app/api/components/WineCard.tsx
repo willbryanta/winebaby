@@ -1,29 +1,48 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { WineCardProps } from "@/app/api/auth/types/page";
+import { Wine } from "../auth/types/page";
+import { ReviewCardProps } from "../auth/types/page";
+import { WineCardProps } from "../auth/types/page";
+import { Review } from "../auth/types/page";
 
-export default function WineCard({ wineProperties }: WineCardProps) {
-  const { WineID, Title, Year, Winemaker, Type, Colour } = wineProperties;
-
+export default function WineCard(
+  { wines }: WineCardProps,
+  { reviews }: ReviewCardProps = { reviews: [] }
+) {
   return (
-    <div
-      id="wine-card"
-      className="bg-white rounded-lg shadow-lg p-4 w-80 border border-gray-200"
-    >
-      <Image
-        src={`/filepathplaceholder/${WineID}`}
-        alt={`${Title} image`}
-        width={300}
-        height={200}
-        className="rounded-md"
-      />
-      <h2 className="text-lg font-semibold mt-2">Title: {Title}</h2>
-      <p className="text-gray-600">Year: {Year}</p>
-      <p className="text-gray-600">Winemaker: {Winemaker}</p>
-      <p className="text-gray-600">Type: {Type}</p>
-      <p className="text-gray-600">Colour: {Colour}</p>
+    <div className="flex-1 flex flex-col items-center overflow-y-auto py-6">
+      <h1 className="text-2xl font-bold mb-4">Wine Dashboard</h1>
+      <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mx-4">
+        {wines.map((wine: Wine) => (
+          <div key={wine.id} className="mb-4 p-4 border-b last:border-b-0">
+            <h2 className="text-xl font-semibold">{wine.name}</h2>
+            <p className="text-gray-600">{wine.manufacturer}</p>
+            <p className="text-sm text-gray-500">{wine.region}</p>
+            <p className="text-sm text-gray-500">{wine.type}</p>
+            <p className="text-sm text-gray-500">
+              Alcohol content: {wine.alcoholContent}
+            </p>
+            <p className="text-sm text-gray-500">Price: {wine.price} AUD</p>
+            <p className="text-sm text-gray-500">Rating: {wine.rating}/5</p>
+            <p className="text-sm text-gray-500">
+              Average Rating: {wine.averageRating}/5
+            </p>
+            <div className="mt-2">
+              <p className="text-sm text-gray-500 font-semibold">Reviews:</p>
+              <div className="pl-4 space-y-2">
+                {reviews.map((review: Review) => (
+                  <div key={review.ID} className="text-sm text-gray-500">
+                    <h3 className="font-medium">{review.Title}</h3>
+                    <p>{review.Content}</p>
+                    <p>Rating: {review.Rating}/5</p>
+                    <p>Date: {review.ReviewDate}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

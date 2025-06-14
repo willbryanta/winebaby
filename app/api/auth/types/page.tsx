@@ -12,6 +12,14 @@ export type Review = {
   Rating?: number;
 };
 
+export type ReviewCardType = {
+  review: Review;
+};
+
+export type ReviewCardProps = {
+  reviews: Review[];
+};
+
 export interface FormData {
   WineID: number | null;
   Winemaker: string;
@@ -30,7 +38,8 @@ export interface WineProperties {
 }
 
 export interface WineCardProps {
-  wineProperties: WineProperties;
+  wines: Wine[];
+  reviews?: Review[];
 }
 
 export interface UserProfile {
