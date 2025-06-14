@@ -15,6 +15,10 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 
 	repo := &repository.MainRepository{DB: db}
 
+	r.Get("/verify-token", func(w http.ResponseWriter, r *http.Request){
+		handlers.VerifyToken(w, r)
+	})
+
 	r.Get("/", func(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("Welcome to Winebaby"))
 	})
@@ -69,9 +73,7 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r.Get("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
 		handlers.GetUserReviewById(w, r, repo, db)})
 		
-	r.Get("/verify-token", func(w http.ResponseWriter, r *http.Request){
-		handlers.VerifyToken(w, r)
-	})
+
 
 	return r
 }
