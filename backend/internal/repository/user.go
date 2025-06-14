@@ -105,12 +105,10 @@ func (r *MainRepository) GetUserProfile(username string) (models.User, error) {
 		err := rows.Scan(
 			&review.ID,
 			&review.WineID,
-			&review.Comment,
+			&review.Content,
 			&review.ReviewDate,
 			&review.ReviewDateTime,
-			&review.ReviewDateTimeUTC,
 			&review.Title,
-			&review.Description,
 			&review.Rating,
 		)
 		if err != nil {
@@ -216,12 +214,10 @@ func (r *MainRepository) GetUserReviews(username string) ([]models.Review, error
 		err := rows.Scan(
 			&review.ID,
 			&review.WineID,
-			&review.Comment,
+			&review.Content,
 			&review.ReviewDate,
 			&review.ReviewDateTime,
-			&review.ReviewDateTimeUTC,
 			&review.Title,
-			&review.Description,
 			&review.Rating,
 		)
 		if err != nil {
@@ -239,12 +235,10 @@ func (r *MainRepository) CreateUserReview(review models.Review) error {
 	err := r.DB.QueryRow(query,
 		review.UserID,
 		review.WineID,
-		review.Comment,
+		review.Content,
 		review.ReviewDate,
 		review.ReviewDateTime,
-		review.ReviewDateTimeUTC,
 		review.Title,
-		review.Description,
 		review.Rating).Scan(&review.ID)
 	return err
 }
@@ -255,12 +249,10 @@ func (r *MainRepository) UpdateUserReview(review models.Review) error {
 			  WHERE id = $11`
 	_, err := r.DB.Exec(query,
 		review.WineID,
-		review.Comment,
+		review.Content,
 		review.ReviewDate,
 		review.ReviewDateTime,
-		review.ReviewDateTimeUTC,
 		review.Title,
-		review.Description,
 		review.Rating,
 		review.ID)
 	return err
@@ -279,12 +271,10 @@ func (r *MainRepository) GetUserReviewById(reviewID int) (models.Review, error) 
 	err := r.DB.QueryRow(query, reviewID).Scan(
 		&review.ID,
 		&review.WineID,
-		&review.Comment,
+		&review.Content,
 		&review.ReviewDate,
 		&review.ReviewDateTime,
-		&review.ReviewDateTimeUTC,
 		&review.Title,
-		&review.Description,
 		&review.Rating)
 	if err != nil {
 		if err == sql.ErrNoRows {
