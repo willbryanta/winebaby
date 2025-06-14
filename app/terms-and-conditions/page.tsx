@@ -1,6 +1,6 @@
 import NavBar from "../api/components/NavBar";
 
-export const termsAndConditions = () => {
+export const TermsAndConditions = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <NavBar />
