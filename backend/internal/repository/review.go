@@ -22,12 +22,10 @@ func GetReviews(r *MainRepository) ([]models.Review, error){
 			&review.ID,
 			&review.UserID,
 			&review.WineID,
-			&review.Comment,
+			&review.Content,
 			&review.ReviewDate,
 			&review.ReviewDateTime,
-			&review.ReviewDateTimeUTC,
 			&review.Title,
-			&review.Description,
 			&review.Rating,
 		)
 		if err != nil {
@@ -47,12 +45,10 @@ func GetReviewById(r *MainRepository, id int) (models.Review, error) {
 		&review.ID,
 		&review.UserID,
 		&review.WineID,
-		&review.Comment,
+		&review.Content,
 		&review.ReviewDate,
 		&review.ReviewDateTime,
-		&review.ReviewDateTimeUTC,
 		&review.Title,
-		&review.Description,
 		&review.Rating,
 	)
 	if err != nil {
@@ -71,12 +67,10 @@ func CreateReview(r *MainRepository, review models.Review) (int, error) {
 	err := r.DB.QueryRow(query,
 		review.UserID,
 		review.WineID,
-		review.Comment,
+		review.Content,
 		review.ReviewDate,
 		review.ReviewDateTime,
-		review.ReviewDateTimeUTC,
 		review.Title,
-		review.Description,
 		review.Rating,
 	).Scan(&id)
 	if err != nil {
@@ -92,12 +86,10 @@ func UpdateReview(r *MainRepository, id int, updated models.Review) error {
 	_, err := r.DB.Exec(query,
 		updated.UserID,
 		updated.WineID,
-		updated.Comment,
+		updated.Content,
 		updated.ReviewDate,
 		updated.ReviewDateTime,
-		updated.ReviewDateTimeUTC,
 		updated.Title,
-		updated.Description,
 		updated.Rating,
 		id,
 	)
