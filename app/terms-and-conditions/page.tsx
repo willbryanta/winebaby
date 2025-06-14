@@ -1,6 +1,6 @@
 import NavBar from "../api/components/NavBar";
 
-export const TermsAndConditions = () => {
+export default function TermsAndConditions() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <NavBar />
@@ -37,4 +37,4 @@ export const TermsAndConditions = () => {
       </div>
     </div>
   );
-};
+}
