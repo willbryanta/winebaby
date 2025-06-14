@@ -14,4 +14,5 @@ type Wine struct {
 	AverageRating	float32	`json:"average_rating"`
 	Type			string 	`json:"type"` // Type refers to cab sav/etc
 	Colour			string 	`json:"colour"` // Red or White
+	ImageURL		string 	`json:"image_url"` // URL to an image of the wine
 }
