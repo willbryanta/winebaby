@@ -1,30 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Review } from "@/app/api/auth/types/page";
 import NavBar from "@/app/api/components/NavBar";
-
-// TODO: Replace with actual data fetching logic
-const reviews: Review[] = [
-  {
-    ID: 1,
-    WineID: 101,
-    Content: "Great wine, loved the taste!",
-    ReviewDate: "2023-10-01",
-    ReviewDateTime: "2023-10-01T12:00:00Z",
-    Title: "Amazing!",
-    Rating: 5,
-  },
-  {
-    ID: 2,
-    WineID: 102,
-    Content: "Not my favorite, but decent.",
-    ReviewDate: "2023-10-02",
-    ReviewDateTime: "2023-10-02T14:00:00Z",
-    Title: "Okay",
-    Rating: 3,
-  },
-];
+import { wines } from "@/app/api/auth/data/mockWineData";
 
 const Dashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -70,14 +48,43 @@ const Dashboard: React.FC = () => {
     <div className="flex flex-col w-screen h-screen bg-gray-100 overflow-hidden">
       <NavBar />
       <div className="flex-1 flex flex-col items-center overflow-y-auto py-6">
-        <h1 className="text-2xl font-bold mb-4">Wine Reviews Dashboard</h1>
+        <h1 className="text-2xl font-bold mb-4">Wine Dashboard</h1>
         <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mx-4">
-          {reviews.map((review) => (
-            <div key={review.ID} className="mb-4 p-4 border-b last:border-b-0">
-              <h2 className="text-xl font-semibold">{review.Title}</h2>
-              <p className="text-gray-600">{review.Content}</p>
-              <p className="text-sm text-gray-500">{review.ReviewDate}</p>
-              <p className="text-sm text-gray-500">Rating: {review.Rating}/5</p>
+          {wines.map((wine) => (
+            <div key={wine.id} className="mb-4 p-4 border-b last:border-b-0">
+              <h2 className="text-xl font-semibold">{wine.name}</h2>
+              <p className="text-gray-600">{wine.manufacturer}</p>
+              <p className="text-sm text-gray-500">{wine.region}</p>
+              <p className="text-sm text-gray-500">{wine.type}</p>
+              <p className="text-sm text-gray-500">
+                Alcohol content: {wine.alcoholContent}
+              </p>
+              <p className="text-sm text-gray-500">Price: {wine.price} AUD</p>
+              <p className="text-sm text-gray-500">Rating: {wine.rating}/5</p>
+              <p className="text-sm text-gray-500">
+                Average Rating: {wine.averageRating}/5
+              </p>
+              <p className="text-sm text-gray-500">
+                Reviews:{" "}
+                {wine?.reviews.map((review) => {
+                  return (
+                    <>
+                      <h2 className="text-sm text-gray-500" key={review.ID}>
+                        {review.Title}
+                      </h2>
+                      <span key={review.ID} className="block">
+                        {review.Content}
+                      </span>
+                      <span key={review.ID} className="block">
+                        {review.Rating}
+                      </span>
+                      <span key={review.ID} className="block">
+                        {review.ReviewDate}
+                      </span>
+                    </>
+                  );
+                })}
+              </p>
             </div>
           ))}
         </div>

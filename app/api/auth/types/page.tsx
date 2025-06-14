@@ -40,7 +40,7 @@ export interface UserProfile {
   reviews: Review[];
 }
 
-export interface Wine {
+export type Wine = {
   id?: number;
   name: string;
   year: number;
@@ -55,7 +55,7 @@ export interface Wine {
   type?: string;
   color?: string;
   imageUrl?: string;
-}
+};
 
 export interface SignInResponse {
   message: string;
