@@ -64,27 +64,19 @@ const Dashboard: React.FC = () => {
               <p className="text-sm text-gray-500">
                 Average Rating: {wine.averageRating}/5
               </p>
-              <p className="text-sm text-gray-500">
-                Reviews:{" "}
-                {wine?.reviews.map((review) => {
-                  return (
-                    <>
-                      <h2 className="text-sm text-gray-500" key={review.ID}>
-                        {review.Title}
-                      </h2>
-                      <span key={review.ID} className="block">
-                        {review.Content}
-                      </span>
-                      <span key={review.ID} className="block">
-                        {review.Rating}
-                      </span>
-                      <span key={review.ID} className="block">
-                        {review.ReviewDate}
-                      </span>
-                    </>
-                  );
-                })}
-              </p>
+              <div className="mt-2">
+                <p className="text-sm text-gray-500 font-semibold">Reviews:</p>
+                <div className="pl-4 space-y-2">
+                  {wine.reviews.map((review) => (
+                    <div key={review.ID} className="text-sm text-gray-500">
+                      <h3 className="font-medium">{review.Title}</h3>
+                      <p>{review.Content}</p>
+                      <p>Rating: {review.Rating}/5</p>
+                      <p>Date: {review.ReviewDate}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
         </div>
