@@ -5,11 +5,15 @@ import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <div className="p-4 bg-gray-100">
-      <h1 className="text-3xl font-bold text-wine">Welcome to WineBaby</h1>
-      <p className="text-lg text-gray-700">
-        Your one-stop destination for wine enthusiasts.
-      </p>
+    <>
+      <div className="flex justify-center p-4 bg-gray-100">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-wine">Welcome to WineBaby</h1>
+          <p className="text-lg text-gray-700">
+            Your one-stop destination for wine enthusiasts.
+          </p>
+        </div>
+      </div>
       <NavBar />
       <Image
         width={1920}
@@ -18,6 +22,6 @@ export default function HomePage() {
         alt="WineBaby Logo"
         className="mt-4 w-48 h-auto"
       />
-    </div>
+    </>
   );
 }
