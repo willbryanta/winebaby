@@ -3,11 +3,11 @@
 //TODO - update optional fields based on UI requirements
 export type Review = {
   ID: number;
+  UserID?: number;
   WineID?: number;
   Content: string;
   ReviewDate?: string;
   ReviewDateTime?: string;
-  ReviewDateTimeUTC?: string;
   Title?: string;
   Rating?: number;
 };
@@ -47,9 +47,6 @@ export interface Wine {
   manufacturer?: string;
   region?: string;
   alcoholContent?: number;
-  servingTemp?: number;
-  servingSize?: number;
-  servingSizeUnit?: string;
   price: number;
   rating?: number; // user's rating
   reviews: Review[];
