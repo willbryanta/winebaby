@@ -118,113 +118,115 @@ export default function ChangeEmailPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <>
       <NavBar />
-      <h1 className="text-2xl font-bold mb-4">Change Email</h1>
-      <form
-        onSubmit={handleChangeEmail}
-        className="bg-white shadow-md rounded-lg p-6 w-full max-w-md"
-      >
-        <div className="mb-4">
-          <label
-            htmlFor="newEmail"
-            className="block text-sm font-medium text-gray-700"
-          >
-            New Email
-          </label>
-          <input
-            type="email"
-            name="newEmail"
-            id="newEmail"
-            required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          />
-        </div>
-        {message && <p className="text-green-600">{message}</p>}
-        {error && <p className="text-red-600">{error}</p>}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition-colors duration-200"
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <h1 className="text-2xl font-bold mb-4">Change Email</h1>
+        <form
+          onSubmit={handleChangeEmail}
+          className="bg-white shadow-md rounded-lg p-6 w-full max-w-md"
         >
-          Change Email
-        </button>
-      </form>
-      <h1 className="text-2xl font-bold mb-4">Change Username</h1>
-      <form
-        onSubmit={handleChangeUsername}
-        className="bg-white shadow-md rounded-lg p-6 w-full max-w-md"
-      >
-        <div className="mb-4">
-          <label
-            htmlFor="newUsername"
-            className="block text-sm font-medium text-gray-700"
+          <div className="mb-4">
+            <label
+              htmlFor="newEmail"
+              className="block text-sm font-medium text-gray-700"
+            >
+              New Email
+            </label>
+            <input
+              type="email"
+              name="newEmail"
+              id="newEmail"
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          {message && <p className="text-green-600">{message}</p>}
+          {error && <p className="text-red-600">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition-colors duration-200"
           >
-            New Username
-          </label>
-          <input
-            type="text"
-            id="newUsername"
-            name="newUsername"
-            required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          />
-        </div>
-        {message && <p className="text-green-600">{message}</p>}
-        {error && <p className="text-red-600">{error}</p>}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200"
+            Change Email
+          </button>
+        </form>
+        <h1 className="text-2xl font-bold mb-4">Change Username</h1>
+        <form
+          onSubmit={handleChangeUsername}
+          className="bg-white shadow-md rounded-lg p-6 w-full max-w-md"
         >
-          Change Username
-        </button>
-      </form>
-      <h1 className="text-2xl font-bold mb-4">Change Password</h1>
-      <form
-        onSubmit={handleChangePassword}
-        className="bg-white shadow-md rounded-lg p-6 w-full max-w-md"
-      >
-        <div className="mb-4">
-          <label
-            htmlFor="oldPassword"
-            className="block text-sm font-medium text-gray-700"
+          <div className="mb-4">
+            <label
+              htmlFor="newUsername"
+              className="block text-sm font-medium text-gray-700"
+            >
+              New Username
+            </label>
+            <input
+              type="text"
+              id="newUsername"
+              name="newUsername"
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          {message && <p className="text-green-600">{message}</p>}
+          {error && <p className="text-red-600">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200"
           >
-            Old Password
-          </label>
-          <input
-            type="password"
-            id="oldPassword"
-            name="oldPassword"
-            required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="newPassword"
-            className="block text-sm font-medium text-gray-700"
-          >
-            New Password
-          </label>
-          <input
-            type="password"
-            id="newPassword"
-            name="newPassword"
-            required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          />
-        </div>
-        {message && <p className="text-green-600">{message}</p>}
-        {error && <p className="text-red-600">{error}</p>}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200"
+            Change Username
+          </button>
+        </form>
+        <h1 className="text-2xl font-bold mb-4">Change Password</h1>
+        <form
+          onSubmit={handleChangePassword}
+          className="bg-white shadow-md rounded-lg p-6 w-full max-w-md"
         >
-          Change Password
-        </button>
-      </form>
-      <Link href="/settings" className="mt-4 text-blue-500 hover:underline">
-        Back to Settings
-      </Link>
-    </div>
+          <div className="mb-4">
+            <label
+              htmlFor="oldPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Old Password
+            </label>
+            <input
+              type="password"
+              id="oldPassword"
+              name="oldPassword"
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="newPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+              New Password
+            </label>
+            <input
+              type="password"
+              id="newPassword"
+              name="newPassword"
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          {message && <p className="text-green-600">{message}</p>}
+          {error && <p className="text-red-600">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200"
+          >
+            Change Password
+          </button>
+        </form>
+        <Link href="/settings" className="mt-4 text-blue-500 hover:underline">
+          Back to Settings
+        </Link>
+      </div>
+    </>
   );
 }
