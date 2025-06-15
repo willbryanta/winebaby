@@ -16,9 +16,11 @@ export type ReviewCardType = {
   review: Review;
 };
 
-export type ReviewCardProps = {
-  reviews: Review[];
-};
+export interface ReviewCardProps {
+  reviews: Review[] | undefined;
+  wineName: string;
+  wineType: string;
+}
 
 export interface FormData {
   WineID: number | null;
