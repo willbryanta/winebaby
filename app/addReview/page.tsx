@@ -1,5 +1,7 @@
 "use client";
 
+import NavBar from "../api/components/NavBar";
+
 export default function AddReview() {
   const handleSubmitReview = async (
     event: React.FormEvent<HTMLFormElement>
@@ -27,6 +29,7 @@ export default function AddReview() {
   };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <NavBar />
       <div className="bg-white p-6 rounded shadow-md w-96">
         <h1 className="text-2xl font-bold mb-4 text-wine">Add Review</h1>
         <form onSubmit={handleSubmitReview} className="space-y-4">

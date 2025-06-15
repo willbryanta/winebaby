@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "@/app/api/components/NavBar";
 import WineCard from "../api/components/WineCard";
-import { wines } from "../api/auth/data/mockWineData"; // Adjust the path as necessary
+import { wines } from "../api/auth/data/mockWineData";
 
 const Dashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
