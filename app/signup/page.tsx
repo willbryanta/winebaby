@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import NavBar from "../api/components/NavBar";
 
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
@@ -38,6 +39,7 @@ export default function SignUpPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <NavBar />
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded shadow-md w-96"
