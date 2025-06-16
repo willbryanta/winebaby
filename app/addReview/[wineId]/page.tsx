@@ -1,8 +1,42 @@
 "use client";
 
-import NavBar from "../api/components/NavBar";
+import NavBar from "../../api/components/NavBar";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import { Wine } from "../../api/auth/types/page";
 
 export default function AddReview() {
+  const { wineId } = useParams();
+
+  useEffect(() => {
+    const getWineDetails = async (): Promise<Wine | undefined> => {
+      try {
+        const res = await fetch(`/api/wines/${wineId}`, {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch wine details");
+        }
+        const wineDetails = await res.json();
+        if (!wineDetails) {
+          console.error("Wine details not found");
+          return undefined;
+        }
+        return wineDetails as Wine;
+      } catch (error) {
+        console.error(`Error fetching wine details: ${error}`);
+        return undefined;
+      }
+    };
+
+    if (!wineId) {
+      console.error("Wine ID is not provided");
+      return;
+    }
+    getWineDetails();
+  }, [wineId]);
+
   const handleSubmitReview = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -27,6 +61,7 @@ export default function AddReview() {
       console.error("Error submitting review:", error);
     }
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <NavBar />

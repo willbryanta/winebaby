@@ -1,6 +1,7 @@
 "use client";
 
 import { Wine, WineCardProps, Review } from "../auth/types/page";
+import Link from "next/link";
 
 export default function WineCard({ wines }: WineCardProps) {
   return (
@@ -12,7 +13,6 @@ export default function WineCard({ wines }: WineCardProps) {
             key={wine.id}
             className="mb-4 p-4 border-b last:border-b-0 flex flex-col md:flex-row gap-4"
           >
-            {/* Wine Details */}
             <div className="flex-1">
               <h2 className="text-xl font-semibold">{wine.name}</h2>
               <p className="text-gray-600">{wine.manufacturer}</p>
@@ -41,15 +41,20 @@ export default function WineCard({ wines }: WineCardProps) {
                 </div>
               </div>
             </div>
-            <div className="md:w-48 flex-shrink-0">
+            <div className="md:w-48 flex-shrink-0 flex flex-col items-center">
               <img
                 src={wine.imageUrl || "/placeholder-wine-bottle.png"}
                 alt={`${wine.name} bottle`}
                 className="w-full h-auto object-contain rounded-md"
                 onError={(e) => {
-                  e.currentTarget.src = "/placeholder-wine-bottle.png"; // Fallback on error
+                  e.currentTarget.src = "/placeholder-wine-bottle.png";
                 }}
               />
+              <Link href={`/addReview/${wine.id}`}>
+                <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                  Add Review
+                </button>
+              </Link>
             </div>
           </div>
         ))}
