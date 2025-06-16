@@ -20,7 +20,7 @@ export default function AddReview() {
   useEffect(() => {
     if (success) {
       console.log("Success state updated, navigating to /");
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [success, router]);
 
