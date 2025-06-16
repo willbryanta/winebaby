@@ -90,7 +90,10 @@ export default function AddReview() {
               required
               className="w-full p-2 border border-gray-300 rounded"
             ></textarea>
-            <button type="submit" className="btn">
+            <button
+              type="submit"
+              className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
+            >
               Submit Review
             </button>
           </form>
