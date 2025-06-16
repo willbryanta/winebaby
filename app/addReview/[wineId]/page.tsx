@@ -2,66 +2,72 @@
 
 import NavBar from "../../api/components/NavBar";
 import { useParams } from "next/navigation";
+import { useState } from "react";
+import { wines } from "@/app/api/auth/data/mockWineData";
+import { Wine, Review } from "../../api/auth/types/page";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Wine } from "../../api/auth/types/page";
 
 export default function AddReview() {
   const { wineId } = useParams();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const router = useRouter();
 
+  const wine: Wine | undefined = wines.find(
+    (wine) => wine.id === Number(wineId)
+  );
   useEffect(() => {
-    const getWineDetails = async (): Promise<Wine | undefined> => {
-      try {
-        const res = await fetch(`/api/wines/${wineId}`, {
-          method: "GET",
-          credentials: "include",
-        });
-        if (!res.ok) {
-          throw new Error("Failed to fetch wine details");
-        }
-        const wineDetails = await res.json();
-        if (!wineDetails) {
-          throw new Error("Wine details not found");
-        }
-        return wineDetails as Wine;
-      } catch (error) {
-        throw new Error(
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred"
-        );
-      }
-    };
+    if (success) {
+      console.log("Success state updated, navigating to /");
+      router.push("/");
+    }
+  }, [success, router]);
 
-    if (!wineId) {
-      console.error("Wine ID is not provided");
+  const handleSubmitReview = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    const formData = new FormData(event.currentTarget);
+    const reviewText = formData.get("reviewText") as string;
+    const rating = formData.get("rating") as string;
+    const title = formData.get("title") as string;
+
+    if (!wineId || !reviewText || !rating || !title) {
+      setError("All fields are required");
       return;
     }
-    getWineDetails();
-  }, [wineId]);
 
-  const handleSubmitReview = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const wineName = formData.get("wineName") as string;
-    const reviewText = formData.get("reviewText") as string;
-    try {
-      const response = await fetch("/api/reviews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ wineName, reviewText }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to submit review");
-      }
-      const result = await response.json();
-      console.log("Review submitted successfully:", result);
-    } catch (error) {
-      console.error("Error submitting review:", error);
+    if (!wine) {
+      setError("Wine not found");
+      return;
     }
+
+    const parsedRating = Number(rating);
+    if (parsedRating < 1 || parsedRating > 5) {
+      setError("Rating must be between 1 and 5");
+      return;
+    }
+
+    const newReview: Review = {
+      ID: wines.flatMap((w) => w.reviews).length + 1,
+      WineID: Number(wineId),
+      Content: reviewText,
+      ReviewDate: new Date().toISOString().split("T")[0],
+      Title: title,
+      Rating: parsedRating,
+    };
+
+    wine.reviews.push(newReview);
+
+    wine.reviewCount = wine.reviews.length;
+    wine.averageRating =
+      wine.reviews.reduce((sum, review) => sum + (review.Rating ?? 0), 0) /
+      wine.reviewCount;
+
+    setSuccess("Review submitted successfully!");
+    event.currentTarget.reset();
   };
 
   return (
@@ -70,14 +76,37 @@ export default function AddReview() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="bg-white p-6 rounded shadow-md w-96">
           <h1 className="text-2xl font-bold mb-4 text-wine">Add Review</h1>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+          {success && <p className="text-green-500 mb-4">{success}</p>}
+          {wine ? (
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-gray-700">
+                {wine.name} ({wine.year})
+              </h2>
+            </div>
+          ) : (
+            <p className="text-red-500 mb-4">Wine not found</p>
+          )}
           <form onSubmit={handleSubmitReview} className="space-y-4">
-            <label htmlFor="wineName" className="block text-gray-700">
-              Wine Name
+            <label htmlFor="title" className="block text-gray-700">
+              Review Title
             </label>
             <input
               type="text"
-              name="wineName"
-              id="wineName"
+              name="title"
+              id="title"
+              required
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <label htmlFor="rating" className="block text-gray-700">
+              Rating (1-5)
+            </label>
+            <input
+              type="number"
+              name="rating"
+              id="rating"
+              min="1"
+              max="5"
               required
               className="w-full p-2 border border-gray-300 rounded"
             />

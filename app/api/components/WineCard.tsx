@@ -51,7 +51,7 @@ export default function WineCard({ wines }: WineCardProps) {
                 }}
               />
               <Link href={`/addReview/${wine.id}`}>
-                <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                <button className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block">
                   Add Review
                 </button>
               </Link>
