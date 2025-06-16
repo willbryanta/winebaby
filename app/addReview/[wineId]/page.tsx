@@ -20,13 +20,15 @@ export default function AddReview() {
         }
         const wineDetails = await res.json();
         if (!wineDetails) {
-          console.error("Wine details not found");
-          return undefined;
+          throw new Error("Wine details not found");
         }
         return wineDetails as Wine;
       } catch (error) {
-        console.error(`Error fetching wine details: ${error}`);
-        return undefined;
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+        );
       }
     };
 
@@ -63,34 +65,36 @@ export default function AddReview() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div>
       <NavBar />
-      <div className="bg-white p-6 rounded shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-4 text-wine">Add Review</h1>
-        <form onSubmit={handleSubmitReview} className="space-y-4">
-          <label htmlFor="wineName" className="block text-gray-700">
-            Wine Name
-          </label>
-          <input
-            type="text"
-            name="wineName"
-            id="wineName"
-            required
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <label htmlFor="reviewText" className="block text-gray-700">
-            Review
-          </label>
-          <textarea
-            name="reviewText"
-            id="reviewText"
-            required
-            className="w-full p-2 border border-gray-300 rounded"
-          ></textarea>
-          <button type="submit" className="btn">
-            Submit Review
-          </button>
-        </form>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="bg-white p-6 rounded shadow-md w-96">
+          <h1 className="text-2xl font-bold mb-4 text-wine">Add Review</h1>
+          <form onSubmit={handleSubmitReview} className="space-y-4">
+            <label htmlFor="wineName" className="block text-gray-700">
+              Wine Name
+            </label>
+            <input
+              type="text"
+              name="wineName"
+              id="wineName"
+              required
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <label htmlFor="reviewText" className="block text-gray-700">
+              Review
+            </label>
+            <textarea
+              name="reviewText"
+              id="reviewText"
+              required
+              className="w-full p-2 border border-gray-300 rounded"
+            ></textarea>
+            <button type="submit" className="btn">
+              Submit Review
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
