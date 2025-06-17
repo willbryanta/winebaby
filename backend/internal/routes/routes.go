@@ -73,7 +73,5 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 	r.Get("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
 		handlers.GetUserReviewById(w, r, repo, db)})
 		
-
-
 	return r
 }
