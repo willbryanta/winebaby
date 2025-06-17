@@ -39,8 +39,6 @@ export default function NavBar() {
         credentials: "include",
       });
 
-      document.cookie =
-        "token=; Max-Age=0; path=/; domain=localhost; SameSite=Lax";
       if (res.ok) {
         setIsAuthenticated(false);
         router.push("/");
