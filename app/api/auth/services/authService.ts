@@ -2,6 +2,32 @@
 
 import { SignInResponse } from "../types/page";
 
+export const verifyToken = async (): Promise<{
+  isAuthenticated: boolean;
+  username?: string;
+}> => {
+  try {
+    const response = await fetch("/verify-token", {
+      method: "GET",
+      credentials: "include", // Maintains session cookies
+    });
+    if (!response.ok) {
+      return { isAuthenticated: false };
+    }
+    const data = await response.json();
+    if (!data || typeof data.isAuthenticated !== "boolean") {
+      return { isAuthenticated: false };
+    }
+    return {
+      isAuthenticated: data.isAuthenticated,
+      username: data.username || "",
+    };
+  } catch (error) {
+    console.error("Token verification error:", error);
+    return { isAuthenticated: false };
+  }
+};
+
 export const signin = async (
   username: string,
   password: string
