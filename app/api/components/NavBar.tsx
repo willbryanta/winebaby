@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { verifyToken } from "../auth/services/authService";
+import { verifyToken, signout } from "../auth/services/authService";
 
 export default function NavBar() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -30,22 +30,12 @@ export default function NavBar() {
   }, [router]);
 
   const handleSignOut = async () => {
-    try {
-      const res = await fetch("http://localhost:8080/signout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      document.cookie =
-        "token=; Max-Age=0; path=/; domain=localhost; SameSite=Lax";
-      if (res.ok) {
-        setIsAuthenticated(false);
-        router.push("/");
-      } else {
-        console.error("Sign out failed");
-      }
-    } catch (error) {
-      console.error("Error signing out:", error);
+    const { success, error } = await signout();
+    if (success) {
+      setIsAuthenticated(false);
+      router.push("/");
+    } else {
+      console.error("Sign out failed:", error);
     }
   };
 

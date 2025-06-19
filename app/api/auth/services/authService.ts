@@ -45,7 +45,7 @@ export const signin = async (
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // Maintains session cookies
+      credentials: "include",
       body: JSON.stringify({
         username: trimmedUsername,
         password: trimmedPassword,
@@ -80,12 +80,14 @@ export const signout = async (): Promise<{
   try {
     const response = await fetch("/signout", {
       method: "POST",
-      credentials: "include", // Maintains session cookies
+      credentials: "include",
     });
 
     if (!response.ok) {
       return { success: false, error: "Failed to sign out" };
     }
+    document.cookie =
+      "token=; Max-Age=0; path=/; domain=localhost; SameSite=Lax";
 
     return { success: true };
   } catch (error) {
