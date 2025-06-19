@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { verifyToken } from "../auth/services/authService";
 
 export default function NavBar() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -12,14 +13,10 @@ export default function NavBar() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await fetch("http://localhost:8080/verify-token", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (res.ok) {
+        const { isAuthenticated, username } = await verifyToken();
+        if (isAuthenticated) {
           setIsAuthenticated(true);
-          const data = await res.json();
-          setUsername(data.username || "");
+          setUsername(username || "");
         } else {
           setIsAuthenticated(false);
           router.push("/signin");
