@@ -9,7 +9,7 @@ export const verifyToken = async (): Promise<{
   try {
     const response = await fetch("/verify-token", {
       method: "GET",
-      credentials: "include", // Maintains session cookies
+      credentials: "include",
     });
     if (!response.ok) {
       return { isAuthenticated: false };

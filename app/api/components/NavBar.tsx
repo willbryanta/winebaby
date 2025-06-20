@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { verifyToken, signout } from "../auth/services/authService";
+import { checkSession } from "../auth/services/sessionService";
+import { signout } from "../auth/services/authService";
+import { Session } from "../auth/types/page";
 
 export default function NavBar() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -11,22 +13,12 @@ export default function NavBar() {
   const router = useRouter();
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { isAuthenticated, username } = await verifyToken();
-        if (isAuthenticated) {
-          setIsAuthenticated(true);
-          setUsername(username || "");
-        } else {
-          setIsAuthenticated(false);
-          router.push("/signin");
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
-        setIsAuthenticated(false);
+    checkSession().then((session: Session) => {
+      setIsAuthenticated(session.isAuthenticated);
+      if (session.username) {
+        setUsername(session.username);
       }
-    };
-    checkSession();
+    });
   }, [router]);
 
   const handleSignOut = async () => {

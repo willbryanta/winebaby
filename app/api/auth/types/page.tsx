@@ -22,6 +22,11 @@ export interface ReviewCardProps {
   wineType: string;
 }
 
+export type Session = {
+  isAuthenticated: boolean;
+  username?: string;
+};
+
 export interface FormData {
   WineID: number | null;
   Winemaker: string;
