@@ -2,11 +2,11 @@
 import React from "react";
 import NavBar from "./api/components/NavBar";
 import { checkSession } from "./api/auth/services/sessionService";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
-  const [isAuth, setIsAuth] = React.useState<boolean>(false);
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const verifySession = async () => {
