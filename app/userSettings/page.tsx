@@ -4,114 +4,69 @@ import { useState, useEffect } from "react";
 import NavBar from "@/app/api/components/NavBar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { handleProfileUpdate } from "@/app/api/auth/utils/authUtils";
+import { checkSession } from "../api/auth/services/sessionService";
 
 export default function ChangeEmailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAuth, setIsAuth] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
-    setIsLoading(false);
-  }, []);
-
-  const handleChangeEmail = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const newEmail = formData.get("newEmail") as string;
-
-    try {
-      const response = await fetch("http://localhost:8080/api/users/profile", {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: newEmail }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to change email");
+    const fetchSession = async () => {
+      try {
+        const session = await checkSession();
+        if (session) {
+          setIsAuth(true);
+        } else {
+          setIsAuth(false);
+          router.push("/signin");
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        setIsAuth(false);
+        router.push("/signin");
+      } finally {
+        setIsLoading(false);
       }
+    };
+    fetchSession();
+  }, [router]);
 
-      setMessage("Email changed successfully!");
-      setError(null);
-      router.push("/userSettings");
-    } catch (error) {
-      console.error("Error changing email:", error);
-      setError(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
-      setMessage(null);
-    }
-  };
+  const handleChangeEmail = (event: React.FormEvent<HTMLFormElement>) =>
+    handleProfileUpdate(
+      event,
+      (formData) => ({ email: formData.get("newEmail") as string }),
+      "Email changed successfully!",
+      setMessage,
+      setError,
+      router
+    );
 
-  const handleChangeUsername = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const newUsername = formData.get("newUsername") as string;
+  const handleChangeUsername = (event: React.FormEvent<HTMLFormElement>) =>
+    handleProfileUpdate(
+      event,
+      (formData) => ({ username: formData.get("newUsername") as string }),
+      "Username changed successfully!",
+      setMessage,
+      setError,
+      router
+    );
 
-    try {
-      const response = await fetch("http://localhost:8080/api/users/profile", {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username: newUsername }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to change username");
-      }
-
-      setMessage("Username changed successfully!");
-      setError(null);
-      router.push("/userSettings");
-    } catch (error) {
-      console.error("Error changing username:", error);
-      setError(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
-      setMessage(null);
-    }
-  };
-
-  const handleChangePassword = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const oldPassword = formData.get("oldPassword") as string;
-    const newPassword = formData.get("newPassword") as string;
-
-    try {
-      const response = await fetch("http://localhost:8080/api/users/profile", {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ oldPassword, password: newPassword }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to change password");
-      }
-
-      setMessage("Password changed successfully!");
-      setError(null);
-      router.push("/userSettings");
-    } catch (error) {
-      console.error("Error changing password:", error);
-      setError(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
-      setMessage(null);
-    }
-  };
+  const handleChangePassword = (event: React.FormEvent<HTMLFormElement>) =>
+    handleProfileUpdate(
+      event,
+      (formData) => ({
+        oldPassword: formData.get("oldPassword") as string,
+        password: formData.get("newPassword") as string,
+      }),
+      "Password changed successfully!",
+      setMessage,
+      setError,
+      router
+    );
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -119,7 +74,7 @@ export default function ChangeEmailPage() {
 
   return (
     <>
-      <NavBar isAuth={} />
+      <NavBar isAuth={isAuth} />
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-8">
         <div className="space-y-10 w-full max-w-md">
           <div>
@@ -155,6 +110,7 @@ export default function ChangeEmailPage() {
               </button>
             </form>
           </div>
+
           <div>
             <h1 className="text-2xl font-bold mb-4 text-center">
               Change Username
@@ -188,6 +144,7 @@ export default function ChangeEmailPage() {
               </button>
             </form>
           </div>
+
           <div>
             <h1 className="text-2xl font-bold mb-4 text-center">
               Change Password
@@ -236,6 +193,7 @@ export default function ChangeEmailPage() {
               </button>
             </form>
           </div>
+
           <div className="text-center">
             <Link
               href="/settings"
