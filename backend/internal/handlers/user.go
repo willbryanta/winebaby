@@ -22,10 +22,15 @@ var JWTSecret = []byte(os.Getenv("JWT_SECRET"))
 var JWTExpiration = 3600
 
 func VerifyToken(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
     cookie, err := r.Cookie("token")
     if err != nil {
         w.WriteHeader(http.StatusUnauthorized)
-        json.NewEncoder(w).Encode(map[string]string{"message": "No token provided"})
+        json.NewEncoder(w).Encode(map[string]any{
+            "isAuthenticated": false,
+            "message":         "No token provided",
+        })
         return
     }
 
@@ -35,21 +40,42 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
         }
         return JWTSecret, nil
     })
-    if err != nil {
+
+    if err != nil || !token.Valid {
         w.WriteHeader(http.StatusUnauthorized)
-        json.NewEncoder(w).Encode(map[string]string{"message": "Invalid token: " + err.Error()})
+        json.NewEncoder(w).Encode(map[string]any{
+            "isAuthenticated": false,
+            "message":         "Invalid or expired token",
+        })
         return
     }
 
-    if !token.Valid {
+    claims, ok := token.Claims.(jwt.MapClaims)
+    if !ok || !token.Valid {
         w.WriteHeader(http.StatusUnauthorized)
-        json.NewEncoder(w).Encode(map[string]string{"message": "Token is invalid or expired"})
+        json.NewEncoder(w).Encode(map[string]any{
+            "isAuthenticated": false,
+            "message":         "Invalid token claims",
+        })
         return
     }
 
+    username, ok := claims["username"].(string)
+    if !ok {
+        w.WriteHeader(http.StatusUnauthorized)
+        json.NewEncoder(w).Encode(map[string]any{
+            "isAuthenticated": false,
+            "message":         "Username not found in token",
+        })
+        return
+    }
     w.WriteHeader(http.StatusOK)
-    json.NewEncoder(w).Encode(map[string]string{"message": "Token is valid"})
+    json.NewEncoder(w).Encode(map[string]any{
+        "isAuthenticated": true,
+        "username":        username,
+    })
 }
+
 
 func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
 	var user models.User
