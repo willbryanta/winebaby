@@ -39,7 +39,7 @@ export default function SignUpPage() {
 
   return (
     <div>
-      <NavBar />
+      <NavBar isAuth={false} />
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <form
           onSubmit={handleSubmit}

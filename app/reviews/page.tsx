@@ -4,50 +4,35 @@ import React, { useEffect, useState } from "react";
 import NavBar from "../api/components/NavBar";
 import { wines } from "../api/auth/data/mockWineData";
 import ReviewCard from "../api/components/ReviewCard";
+import { checkSession } from "../api/auth/services/sessionService";
+import { useRouter } from "next/navigation";
 
 export default function ReviewsPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    const verifyToken = async () => {
+    const fetchSession = async () => {
       try {
-        const res = await fetch("http://localhost:8080/verify-token", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (res.ok) {
-          setIsAuthenticated(true);
+        const session = await checkSession();
+        if (session) {
+          setIsAuth(true);
         } else {
-          setIsAuthenticated(false);
+          setIsAuth(false);
+          router.push("/signin");
         }
       } catch (error) {
-        console.error("Error verifying token:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
+        console.error("Error checking session:", error);
+        setIsAuth(false);
+        router.push("/signin");
       }
     };
-    verifyToken();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
-      </div>
-    );
-  }
-  if (!isAuthenticated) {
-    return (
-      <p className="flex items-center justify-center h-screen">Access Denied</p>
-    );
-  }
+    fetchSession();
+  }, [router]);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-gray-100 overflow-hidden">
-      <NavBar />
+      <NavBar isAuth={isAuth} />
       <div className="flex-1 overflow-y-auto py-6">
         {wines.map((wine) => (
           <ReviewCard
