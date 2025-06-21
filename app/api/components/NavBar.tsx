@@ -1,25 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signout } from "../auth/services/authService";
 import { NavBarProps } from "../auth/types/page";
 
-export default function NavBar(NavBarProps: NavBarProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [username, setUsername] = useState<string>(NavBarProps.username || "");
+export default function NavBar({ isAuth = false, username = "" }: NavBarProps) {
   const router = useRouter();
-
-  if (NavBarProps.isAuth !== undefined) {
-    setIsAuthenticated(NavBarProps.isAuth);
-    setUsername(NavBarProps.username || "");
-  }
 
   const handleSignOut = async () => {
     const { success, error } = await signout();
     if (success) {
-      setIsAuthenticated(false);
       router.push("/");
     } else {
       console.error("Sign out failed:", error);
@@ -39,9 +30,7 @@ export default function NavBar(NavBarProps: NavBarProps) {
                 Home
               </Link>
             </li>
-            {isAuthenticated === null ? (
-              <li>Loading...</li>
-            ) : isAuthenticated ? (
+            {isAuth ? (
               <li>
                 <Link
                   href="/dashboard"
@@ -75,7 +64,7 @@ export default function NavBar(NavBarProps: NavBarProps) {
         <div className="flex-1 text-center">
           <span className="text-2xl font-bold text-wine-light">WineBaby</span>
         </div>
-        {isAuthenticated && (
+        {isAuth && (
           <div className="flex-1">
             <ul className="flex space-x-6 items-center justify-end">
               <li>
