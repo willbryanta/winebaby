@@ -2,6 +2,7 @@
 
 import { Wine, WineCardProps, Review } from "../auth/types/page";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function WineCard({ wines }: WineCardProps) {
   return (
@@ -42,7 +43,9 @@ export default function WineCard({ wines }: WineCardProps) {
               </div>
             </div>
             <div className="md:w-48 flex-shrink-0 flex flex-col items-center">
-              <img
+              <Image
+                width={200}
+                height={300}
                 src={wine.imageUrl || "/placeholder-wine-bottle.png"}
                 alt={`${wine.name} bottle`}
                 className="w-full h-auto object-contain rounded-md"

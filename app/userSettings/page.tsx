@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { handleProfileUpdate } from "@/app/api/auth/utils/authUtils";
 import { checkSession } from "../api/auth/services/sessionService";
 
-export default function ChangeEmailPage() {
+export default function UpdateUserCredentials() {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -102,15 +102,16 @@ export default function ChangeEmailPage() {
               </div>
               {message && <p className="text-green-600 mb-4">{message}</p>}
               {error && <p className="text-red-600 mb-4">{error}</p>}
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-medium py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors duration-200 text-sm"
-              >
-                Change Email
-              </button>
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
+                >
+                  Change Email
+                </button>
+              </div>
             </form>
           </div>
-
           <div>
             <h1 className="text-2xl font-bold mb-4 text-center">
               Change Username
@@ -136,15 +137,16 @@ export default function ChangeEmailPage() {
               </div>
               {message && <p className="text-green-600 mb-4">{message}</p>}
               {error && <p className="text-red-600 mb-4">{error}</p>}
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-medium py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors duration-200 text-sm"
-              >
-                Change Username
-              </button>
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
+                >
+                  Change Username
+                </button>
+              </div>
             </form>
           </div>
-
           <div>
             <h1 className="text-2xl font-bold mb-4 text-center">
               Change Password
@@ -185,12 +187,14 @@ export default function ChangeEmailPage() {
               </div>
               {message && <p className="text-green-600 mb-4">{message}</p>}
               {error && <p className="text-red-600 mb-4">{error}</p>}
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-medium py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors duration-200 text-sm"
-              >
-                Change Password
-              </button>
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  className="bg-wine hover:bg-wine-dark text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 inline-block"
+                >
+                  Change Password
+                </button>
+              </div>
             </form>
           </div>
 
