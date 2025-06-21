@@ -20,6 +20,7 @@ export async function redirectIfNotSignedIn(request: NextRequest) {
       const data = await verifyResponse.json();
 
       if (!verifyResponse.ok || !data.isAuthenticated) {
+        url.pathname = "/signin";
         return NextResponse.redirect(url);
       }
 
