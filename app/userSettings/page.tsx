@@ -119,7 +119,7 @@ export default function ChangeEmailPage() {
 
   return (
     <>
-      <NavBar />
+      <NavBar isAuth={} />
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-8">
         <div className="space-y-10 w-full max-w-md">
           <div>

@@ -1,6 +1,5 @@
 "use client";
 
-//TODO - update optional fields based on UI requirements
 export type Review = {
   ID: number;
   UserID?: number;
@@ -14,6 +13,11 @@ export type Review = {
 
 export type ReviewCardType = {
   review: Review;
+};
+
+export type NavBarProps = {
+  isAuth: boolean;
+  username?: string;
 };
 
 export interface ReviewCardProps {

@@ -1,25 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { checkSession } from "../auth/services/sessionService";
 import { signout } from "../auth/services/authService";
-import { Session } from "../auth/types/page";
+import { NavBarProps } from "../auth/types/page";
 
-export default function NavBar() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [username, setUsername] = useState<string>("");
+export default function NavBar(NavBarProps: NavBarProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>(NavBarProps.username || "");
   const router = useRouter();
 
-  useEffect(() => {
-    checkSession().then((session: Session) => {
-      setIsAuthenticated(session.isAuthenticated);
-      if (session.username) {
-        setUsername(session.username);
-      }
-    });
-  }, [router]);
+  if (NavBarProps.isAuth !== undefined) {
+    setIsAuthenticated(NavBarProps.isAuth);
+    setUsername(NavBarProps.username || "");
+  }
 
   const handleSignOut = async () => {
     const { success, error } = await signout();

@@ -4,32 +4,24 @@ import React, { useEffect, useState } from "react";
 import NavBar from "@/app/api/components/NavBar";
 import WineCard from "../api/components/WineCard";
 import { wines } from "../api/auth/data/mockWineData";
+import { checkSession } from "../api/auth/services/sessionService";
 
 const Dashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const verifyToken = async () => {
+    const verifySession = async () => {
       try {
-        const res = await fetch("http://localhost:8080/verify-token", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (res.ok) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error("Error verifying token:", error);
+        const session = await checkSession();
+        setIsAuthenticated(!!session);
+      } catch {
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
     };
-    verifyToken();
+    verifySession();
   }, []);
 
   if (isLoading) {
@@ -47,7 +39,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col w-screen h-screen bg-gray-100 overflow-hidden">
-      <NavBar />
+      <NavBar isAuth={isAuthenticated} />
       <WineCard wines={wines} />
     </div>
   );
