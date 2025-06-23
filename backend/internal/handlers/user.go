@@ -140,7 +140,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, repo *repository.MainReposit
 	user.Password = string(hashedPassword)
 
 
-	if err := repo.CreateUser(user); err != nil {
+	if err := repo.CreateUser(&user); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to create user: " + err.Error()})
 		return

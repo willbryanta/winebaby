@@ -24,9 +24,13 @@ func (r *MainRepository) SignUp(username, password, email string) (models.User, 
 	return user, nil
 }
 
-func (r *MainRepository) CreateUser(user models.User) error {
+func (r *MainRepository) CreateUser(user *models.User) error {
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id`
-	err := r.DB.QueryRow(query, user.Username, user.Password, user.Email).Scan(&user.ID)
+	email := ""
+	if user.Email != nil {
+		email = *user.Email
+	}
+	err := r.DB.QueryRow(query, user.Username, user.Password, email).Scan(&user.ID)
 	return err
 }
 
