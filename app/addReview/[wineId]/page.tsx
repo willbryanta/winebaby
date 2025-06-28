@@ -72,6 +72,7 @@ export default function AddReview() {
 
     const newReview: Review = {
       ID: wines.flatMap((w) => w.reviews).length + 1,
+      UserID: 1, //TODO: serve from session
       WineID: Number(wineId),
       Content: reviewText,
       ReviewDate: new Date().toISOString().split("T")[0],
