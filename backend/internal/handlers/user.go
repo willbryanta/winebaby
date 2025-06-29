@@ -7,13 +7,10 @@ import (
 	"net/http"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 	"winebaby/internal/models"
 	"winebaby/internal/repository"
-
-	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -270,7 +267,6 @@ func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.
 		return
 	}
 
-	// If password is provided, verify old password
 	if user.Password != "" {
 		var reqBody struct {
 			OldPassword string `json:"old_password"`
@@ -280,7 +276,6 @@ func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.
 			json.NewEncoder(w).Encode(map[string]string{"message": "Old password required for password change"})
 			return
 		}
-		// Fetch the user from the database to get the current hashed password
 		existingUser, err := repo.GetUserByUsername(user.Username)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -302,184 +297,6 @@ func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User profile updated successfully"})
-}
-
-func DeleteUser(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):]
-	if err := repo.DeleteUser(username); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to delete user"})
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "User deleted successfully"})
-}
-
-func GetUserFavoriteWines(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):]
-	favoriteWines, err := repo.GetUserFavoriteWines(username)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to fetch favorite wines"})
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(favoriteWines)
-}
-
-func AddUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	var wine models.Wine
-	err := json.NewDecoder(r.Body).Decode(&wine)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
-		return
-	}
-
-	userID := chi.URLParam(r, "userID")
-	wineID := chi.URLParam(r, "wineID")
-
-	userIDInt, err := strconv.Atoi(userID)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid user ID"})
-		return
-	}
-	wineIDInt, err := strconv.Atoi(wineID)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid wine ID"})
-		return
-	}
-	if err := repo.AddUserFavoriteWine(userIDInt, wineIDInt); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to add favorite wine"})
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Favorite wine added successfully"})
-}
-
-func RemoveUserFavoriteWine(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	userID := chi.URLParam(r, "userID") 
-	wineID := chi.URLParam(r, "wineID")
-
-	userIDInt, err := strconv.Atoi(userID)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid user ID"})
-		return
-	}
-	wineIDInt, err := strconv.Atoi(wineID)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid wine ID"})
-		return
-	}
-
-	if err := repo.RemoveUserFavoriteWine(userIDInt, wineIDInt); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to remove favorite wine"})
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Favorite wine removed successfully"})
-}
-func GetUserReviews(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] 
-	reviews, err := repo.GetUserReviews(username)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to fetch user reviews"})
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reviews)
-}
-
-func CreateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	var review models.Review
-	err := json.NewDecoder(r.Body).Decode(&review)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
-		return
-	}
-
-	if err := repo.CreateUserReview(review); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to create user review"})
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "User review created successfully"})
-}
-
-func UpdateUserReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	var review models.Review
-	err := json.NewDecoder(r.Body).Decode(&review)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request body"})
-		return
-	}
-
-	if err := repo.UpdateUserReview(review); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to update user review"})
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "User review updated successfully"})
-}
-
-func DeleteUserReview(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	reviewIdStr := chi.URLParam(r, "reviewId")
-	reviewId, err := strconv.Atoi(reviewIdStr)
-	if err != nil {
-        w.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(w).Encode(map[string]string{"message": "Invalid review ID"})
-        return
-    }
-	if err := repo.DeleteUserReview(reviewId); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to delete user review"})
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "User review deleted successfully"})
-}
-
-func GetUserReviewById(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	reviewIdStr := chi.URLParam(r, "reviewId")
-	reviewId, err := strconv.Atoi(reviewIdStr)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid review ID"})
-		return
-	}
-	review, err := repo.GetUserReviewById(reviewId)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Failed to fetch user review"})
-		return
-	}
-	if review.ID == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(map[string]string{"message": "User review not found"})
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(review)
 }
 
 func GetUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {

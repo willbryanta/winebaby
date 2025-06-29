@@ -122,6 +122,7 @@ func (r *MainRepository) GetUserProfile(username string) (models.User, error) {
 	}
 	return user, nil
 }
+
 func (r *MainRepository) GetUserByEmail(email string) (models.User, error) {
 	query := `SELECT id, username, email, password FROM users WHERE email = $1`
 	var user models.User
@@ -142,63 +143,6 @@ func (r *MainRepository) GetUserByEmail(email string) (models.User, error) {
 func (r *MainRepository) UpdateUserProfile(user models.User) error {
 	query := `UPDATE users SET username = $1, email = $2 WHERE id = $3`
 	_, err := r.DB.Exec(query, user.Username, user.Email, user.ID)
-	return err
-}
-
-func (r *MainRepository) DeleteUser(username string) error {
-	query := `DELETE FROM users WHERE username = $1`
-	_, err := r.DB.Exec(query, username)
-	return err
-}
-
-func (r *MainRepository) GetUserFavoriteWines(username string) ([]models.Wine, error) {
-	query := `SELECT id, name, year, manufacturer, region, alcohol_content, serving_temp, serving_size, 
-						  serving_size_unit, serving_size_unit_abbreviation, serving_size_unit_description, 
-						  serving_size_unit_description_abbreviation, serving_size_unit_description_plural, 
-						  price, rating, type, colour 
-				   FROM favorite_wines WHERE user_id = (SELECT id FROM users WHERE username = $1)`
-	rows, err := r.DB.Query(query, username)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var wines []models.Wine
-	for rows.Next() {
-		var wine models.Wine
-		err := rows.Scan(
-			&wine.ID,
-			&wine.Name,
-			&wine.Year,
-			&wine.Manufacturer,
-			&wine.Region,
-			&wine.AlcoholContent,
-
-			&wine.Price,
-			&wine.Rating,
-			&wine.Type,
-			&wine.Colour,
-		)
-		if err != nil {
-			return nil, err
-		}
-		wines = append(wines, wine)
-	}
-	return wines, nil
-}
-
-func (r *MainRepository) AddUserFavoriteWine(userID int, wineID int) error {
-	query := `INSERT INTO favorite_wines (user_id, wine_id) VALUES ($1, $2)`
-	_, err := r.DB.Exec(query, userID, wineID)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *MainRepository) RemoveUserFavoriteWine(userID int, wineID int) error {
-	query := `DELETE FROM favorite_wines WHERE user_id = $1 AND wine_id = $2`
-	_, err := r.DB.Exec(query, userID, wineID)
 	return err
 }
 
@@ -232,59 +176,6 @@ func (r *MainRepository) GetUserReviews(username string) ([]models.Review, error
 	return reviews, nil
 }
 
-func (r *MainRepository) CreateUserReview(review models.Review) error {
-	query := `INSERT INTO reviews (user_id, wine_id, winemaker, wine_name, comment, review_date, 
-								  review_date_time, review_date_time_utc, title, description, rating) 
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`
-	err := r.DB.QueryRow(query,
-		review.UserID,
-		review.WineID,
-		review.Content,
-		review.ReviewDate,
-		review.ReviewDateTime,
-		review.Title,
-		review.Rating).Scan(&review.ID)
-	return err
-}
 
-func (r *MainRepository) UpdateUserReview(review models.Review) error {
-	query := `UPDATE reviews SET wine_id = $1, winemaker = $2, wine_name = $3, comment = $4, review_date = $5, 
-								  review_date_time = $6, review_date_time_utc = $7, title = $8, description = $9, rating = $10 
-			  WHERE id = $11`
-	_, err := r.DB.Exec(query,
-		review.WineID,
-		review.Content,
-		review.ReviewDate,
-		review.ReviewDateTime,
-		review.Title,
-		review.Rating,
-		review.ID)
-	return err
-}
-func (r *MainRepository) DeleteUserReview(reviewID int) error {
-	query := `DELETE FROM reviews WHERE id = $1`
-	_, err := r.DB.Exec(query, reviewID)
-	return err
-}
 
-func (r *MainRepository) GetUserReviewById(reviewID int) (models.Review, error) {
-	query := `SELECT id, wine_id, winemaker, wine_name, comment, review_date, review_date_time, 
-						  review_date_time_utc, title, description, rating 
-				   FROM reviews WHERE id = $1`
-	var review models.Review
-	err := r.DB.QueryRow(query, reviewID).Scan(
-		&review.ID,
-		&review.WineID,
-		&review.Content,
-		&review.ReviewDate,
-		&review.ReviewDateTime,
-		&review.Title,
-		&review.Rating)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return models.Review{}, nil
-		}
-		return models.Review{}, err
-	}
-	return review, nil
-}
+

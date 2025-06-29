@@ -52,26 +52,6 @@ func RegisterRoutes(db *sql.DB) *chi.Mux {
 		handlers.GetUserProfile(w,r, repo, db)})
 	r.Put("/user/{username}", func(w http.ResponseWriter, r *http.Request){
 		handlers.UpdateUserProfile(w,r, repo, db)})
-	r.Delete("/user/{username}", func(w http.ResponseWriter, r *http.Request){
-		handlers.DeleteUser(w,r, repo, db)})
-
-
-	r.Get("/user/{username}/wines", func(w http.ResponseWriter, r *http.Request){
-		handlers.GetUserFavoriteWines(w,r, repo, db)})
-	r.Post("/user/{username}/wines/{wineId}", func(w http.ResponseWriter, r *http.Request){
-		handlers.AddUserFavoriteWine(w,r, repo, db)})
-	r.Delete("/user/{username}/wines/{wineId}", func(w http.ResponseWriter, r *http.Request){
-		handlers.RemoveUserFavoriteWine(w,r, repo, db)})
-	r.Get("/user/{username}/reviews", func(w http.ResponseWriter, r *http.Request){
-		handlers.GetUserReviews(w,r, repo, db)})
-	r.Post("/user/{username}/reviews", func(w http.ResponseWriter, r *http.Request){
-		handlers.CreateUserReview(w, r, repo, db)})
-	r.Put("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
-		handlers.UpdateUserReview(w, r, repo, db)})
-	r.Delete("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
-		handlers.DeleteUserReview(w, r, repo, db)})
-	r.Get("/user/{username}/reviews/{reviewId}", func(w http.ResponseWriter, r *http.Request){
-		handlers.GetUserReviewById(w, r, repo, db)})
 	
 	return r
 }
