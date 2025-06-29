@@ -1,14 +1,7 @@
+import { ReviewResponse, ErrorWithMessage } from "../types/reviewResponse";
+
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL as string | undefined;
 const TOKEN_KEY = import.meta.env.VITE_JWT_KEY as string | undefined;
-
-interface ReviewResponse {
-  data?: string;
-  error?: string;
-}
-
-interface ErrorWithMessage {
-  message: string;
-}
 
 const createReview = async (
   review: Record<string, unknown>

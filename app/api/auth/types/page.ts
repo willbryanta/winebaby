@@ -11,6 +11,15 @@ export type Review = {
   Rating?: number;
 };
 
+export interface ReviewResponse {
+  data?: string;
+  error?: string;
+}
+
+export interface ErrorWithMessage {
+  message: string;
+}
+
 export type ReviewCardType = {
   review: Review;
 };
