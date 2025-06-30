@@ -1,4 +1,4 @@
-import { ReviewResponse, ErrorWithMessage } from "../types/reviewResponse";
+import { ReviewResponse, ErrorWithMessage } from "../types/page";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL as string | undefined;
 const TOKEN_KEY = import.meta.env.VITE_JWT_KEY as string | undefined;

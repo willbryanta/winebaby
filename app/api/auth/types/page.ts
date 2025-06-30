@@ -40,6 +40,10 @@ export type Session = {
   username?: string;
 };
 
+export interface FetchProfileParams {
+  username: string;
+}
+
 export interface FormData {
   WineID: number | null;
   Winemaker: string;

@@ -5,7 +5,6 @@ import (
 	"winebaby/internal/models"
 )
 
-// Get all reviews
 func GetReviews(r *MainRepository) ([]models.Review, error){
 	query := `SELECT id, user_id, wine_id, comment, review_date, review_date_time, review_date_time_utc, title, description, rating 
               FROM reviews`
