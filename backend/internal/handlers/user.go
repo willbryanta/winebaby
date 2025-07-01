@@ -11,6 +11,7 @@ import (
 	"time"
 	"winebaby/internal/models"
 	"winebaby/internal/repository"
+
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -249,7 +250,7 @@ func SignOut(w http.ResponseWriter, r *http.Request) {
 	})
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Sign-out successful"})
+	json.NewEncoder(w).Encode(map[string]bool{"success": true})
 }
 
 func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {

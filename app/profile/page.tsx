@@ -4,28 +4,20 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { UserProfile } from "@/app/api/auth/types/page";
 import { checkSession } from "../api/auth/services/sessionService";
-import { FetchProfileParams } from "../api/auth/types/page";
+import { getUserProfile } from "../api/auth/services/userService";
 
 export default function UserProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProfile = async ({
-    username,
-  }: FetchProfileParams): Promise<void> => {
+  const fetchProfile = async (): Promise<void> => {
     try {
-      const res: Response = await fetch(
-        `http://localhost:8080/api/users/${username}`,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      if (!res.ok) {
+      const res = await getUserProfile();
+      if (!res) {
         throw new Error("Failed to fetch user profile");
       }
-      const data: UserProfile = await res.json();
-      setProfile(data);
+      setProfile(res);
     } finally {
       setLoading(false);
     }
@@ -45,10 +37,14 @@ export default function UserProfilePage() {
           setLoading(false);
           return;
         }
-        await fetchProfile({ username: session.username });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        await fetchProfile();
+      } catch (error) {
         setLoading(false);
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
       }
     };
     fetchSession();

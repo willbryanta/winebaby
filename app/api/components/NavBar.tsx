@@ -11,7 +11,9 @@ export default function NavBar({ isAuth = false, username = "" }: NavBarProps) {
   const handleSignOut = async () => {
     const { success, error } = await signout();
     if (success) {
+      console.log("isAuth:", isAuth);
       router.push("/");
+      router.refresh();
     } else {
       console.error("Sign out failed:", error);
     }

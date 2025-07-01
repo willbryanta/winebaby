@@ -2,12 +2,14 @@
 
 import { SignInResponse } from "../types/page";
 
+const BACKEND_URL = "http://localhost:3000";
+
 export const verifyToken = async (): Promise<{
   isAuthenticated: boolean;
   username?: string;
 }> => {
   try {
-    const response = await fetch("/verify-token", {
+    const response = await fetch(`${BACKEND_URL}/verify-token`, {
       method: "GET",
       credentials: "include",
     });
@@ -78,7 +80,11 @@ export const signout = async (): Promise<{
   error?: string;
 }> => {
   try {
-    const response = await fetch("/signout", {
+    const verifyResponse = await verifyToken();
+    if (!verifyResponse.isAuthenticated) {
+      return { success: false, error: "User is not authenticated" };
+    }
+    const response = await fetch(`${BACKEND_URL}/signout`, {
       method: "POST",
       credentials: "include",
     });
@@ -86,9 +92,6 @@ export const signout = async (): Promise<{
     if (!response.ok) {
       return { success: false, error: "Failed to sign out" };
     }
-    document.cookie =
-      "token=; Max-Age=0; path=/; domain=localhost; SameSite=Lax";
-
     return { success: true };
   } catch (error) {
     console.error("Sign-out error:", error);
@@ -110,12 +113,12 @@ export const signup = async (
   }
 
   try {
-    const response = await fetch("/signup", {
+    const response = await fetch(`${BACKEND_URL}/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // Maintains session cookies
+      credentials: "include",
       body: JSON.stringify({
         username: trimmedUsername,
         password: trimmedPassword,
@@ -153,9 +156,9 @@ export const changePassword = async (
   }
 
   try {
-    const response = await fetch("/users/profile", {
+    const response = await fetch(`${BACKEND_URL}/users/profile`, {
       method: "PUT",
-      credentials: "include", // Maintains session cookies
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -180,7 +183,7 @@ export const changeUsername = async (
   }
 
   try {
-    const response = await fetch("/users/profile", {
+    const response = await fetch(`${BACKEND_URL}/users/profile`, {
       method: "PUT",
       credentials: "include", // Maintains session cookies
       headers: {
