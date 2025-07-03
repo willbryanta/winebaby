@@ -17,6 +17,7 @@ export default function NavBar({ isAuth = false, username = "" }: NavBarProps) {
       router.push("/");
       router.refresh();
     } else {
+      setAuthenticated(true);
       console.error("Sign out failed:", error);
     }
   };
