@@ -1,7 +1,9 @@
 "use client";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL as string | undefined;
-const TOKEN_KEY = import.meta.env.VITE_JWT_KEY as string | undefined;
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+const TOKEN_KEY =
+  process.env.NEXT_PUBLIC_TOKEN_KEY || "default_token_key";
 
 import { UserProfile } from "@/app/api/auth/types/page";
 

@@ -2,7 +2,7 @@
 
 import { SignInResponse } from "../types/page";
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = "http://localhost:8080";
 
 export const verifyToken = async (): Promise<{
   isAuthenticated: boolean;
@@ -80,10 +80,6 @@ export const signout = async (): Promise<{
   error?: string;
 }> => {
   try {
-    const verifyResponse = await verifyToken();
-    if (!verifyResponse.isAuthenticated) {
-      return { success: false, error: "User is not authenticated" };
-    }
     const response = await fetch(`${BACKEND_URL}/signout`, {
       method: "POST",
       credentials: "include",

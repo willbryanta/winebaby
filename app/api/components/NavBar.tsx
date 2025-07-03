@@ -4,14 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signout } from "../auth/services/authService";
 import { NavBarProps } from "../auth/types/page";
+import { useState } from "react";
 
 export default function NavBar({ isAuth = false, username = "" }: NavBarProps) {
   const router = useRouter();
+  const [isAuthenticated, setAuthenticated] = useState(isAuth);
 
   const handleSignOut = async () => {
     const { success, error } = await signout();
     if (success) {
-      console.log("isAuth:", isAuth);
+      setAuthenticated(false);
       router.push("/");
       router.refresh();
     } else {
@@ -32,7 +34,7 @@ export default function NavBar({ isAuth = false, username = "" }: NavBarProps) {
                 Home
               </Link>
             </li>
-            {isAuth ? (
+            {isAuthenticated ? (
               <li>
                 <Link
                   href="/dashboard"
@@ -66,7 +68,7 @@ export default function NavBar({ isAuth = false, username = "" }: NavBarProps) {
         <div className="flex-1 text-center">
           <span className="text-2xl font-bold text-wine-light">WineBaby</span>
         </div>
-        {isAuth && (
+        {isAuthenticated && (
           <div className="flex-1">
             <ul className="flex space-x-6 items-center justify-end">
               <li>
