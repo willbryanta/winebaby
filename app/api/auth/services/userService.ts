@@ -2,13 +2,21 @@
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
-const TOKEN_KEY =
-  process.env.NEXT_PUBLIC_TOKEN_KEY || "default_token_key";
+const TOKEN_KEY = process.env.NEXT_PUBLIC_TOKEN_KEY || "default_token_key";
 
 import { UserProfile } from "@/app/api/auth/types/page";
+import { checkSession } from "./sessionService";
 
 export const getUserProfile = async (): Promise<UserProfile | null> => {
   try {
+    const session = await checkSession();
+    if (!session.isAuthenticated) {
+      throw new Error("User is not authenticated");
+    }
+    const username = session.username;
+    if (!username) {
+      throw new Error("Username is not available in session");
+    }
     if (!BACKEND_URL) {
       throw new Error("Backend URL is not configured");
     }
@@ -16,7 +24,7 @@ export const getUserProfile = async (): Promise<UserProfile | null> => {
       throw new Error("Token key is not configured");
     }
     const token = localStorage.getItem(TOKEN_KEY);
-    const res = await fetch(`${BACKEND_URL}/api/users/profile`, {
+    const res = await fetch(`${BACKEND_URL}/users/${username}`, {
       method: "GET",
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
