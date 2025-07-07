@@ -15,6 +15,7 @@ require github.com/golang-jwt/jwt/v5 v5.2.2
 require github.com/willbryanta/winebaby v0.0.0-20250616094838-5f11844abaeb // indirect
 
 require (
+	github.com/go-chi/chi v1.5.5
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/rs/zerolog v1.34.0

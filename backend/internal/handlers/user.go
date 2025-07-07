@@ -12,6 +12,7 @@ import (
 	"winebaby/internal/models"
 	"winebaby/internal/repository"
 
+	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -301,7 +302,12 @@ func UpdateUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.
 }
 
 func GetUserProfile(w http.ResponseWriter, r *http.Request, repo *repository.MainRepository, db *sql.DB) {
-	username := r.URL.Path[len("/api/users/"):] 
+	username := chi.URLParam(r, "username")
+	if username == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Username is required"})
+		return
+	}
 	user, err := repo.GetUserProfile(username)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
