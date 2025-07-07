@@ -52,7 +52,8 @@ func (r *MainRepository) GetUserByUsername(username string) (models.User, error)
 }
 
 func (r *MainRepository) GetUserProfile(username string) (models.User, error) {
-	userQuery := `SELECT id, username, email FROM users WHERE username = $1`
+	
+	userQuery := `SELECT id, username, email, password FROM users WHERE username = $1`
 	var user models.User
 	var email sql.NullString
 	err := r.DB.QueryRow(userQuery, username).Scan(&user.ID, &user.Username, &email)
@@ -65,12 +66,12 @@ func (r *MainRepository) GetUserProfile(username string) (models.User, error) {
 	if email.Valid {
 		user.Email = &email.String
 	}
-
-	winesQuery := `SELECT id, name, year, manufacturer, region, alcohol_content, serving_temp, serving_size, 
-                          serving_size_unit, serving_size_unit_abbreviation, serving_size_unit_description, 
-                          serving_size_unit_description_abbreviation, serving_size_unit_description_plural, 
-                          price, rating, type, colour 
-                   FROM favorite_wines WHERE user_id = $1`
+	winesQuery := `
+		SELECT w.id, w.name, w.year, w.manufacturer, w.region, w.alcohol_content, 
+		       w.price, w.rating, w.review_count, w.average_rating, w.type, w.colour, w.image_url
+		FROM wines w
+		JOIN user_favorite_wines ufw ON w.id = ufw.wine_id
+		WHERE ufw.user_id = $1`
 	rows, err := r.DB.Query(winesQuery, user.ID)
 	if err != nil {
 		return models.User{}, err
@@ -87,18 +88,21 @@ func (r *MainRepository) GetUserProfile(username string) (models.User, error) {
 			&wine.AlcoholContent,
 			&wine.Price,
 			&wine.Rating,
+			&wine.ReviewCount,
+			&wine.AverageRating,
 			&wine.Type,
 			&wine.Colour,
+			&wine.ImageURL,
 		)
 		if err != nil {
 			return models.User{}, err
 		}
 		user.FavoriteWines = append(user.FavoriteWines, wine)
 	}
-
-	reviewsQuery := `SELECT id, wine_id, winemaker, wine_name, comment, review_date, review_date_time, 
-                            review_date_time_utc, title, description, rating 
-                     FROM reviews WHERE user_id = $1`
+	reviewsQuery := `
+		SELECT id, user_id, wine_id, content, review_date, review_date_time, title, rating
+		FROM reviews
+		WHERE user_id = $1`
 	rows, err = r.DB.Query(reviewsQuery, user.ID)
 	if err != nil {
 		return models.User{}, err
@@ -108,6 +112,7 @@ func (r *MainRepository) GetUserProfile(username string) (models.User, error) {
 		var review models.Review
 		err := rows.Scan(
 			&review.ID,
+			&review.UserID,
 			&review.WineID,
 			&review.Content,
 			&review.ReviewDate,
@@ -120,6 +125,7 @@ func (r *MainRepository) GetUserProfile(username string) (models.User, error) {
 		}
 		user.Reviews = append(user.Reviews, review)
 	}
+
 	return user, nil
 }
 
