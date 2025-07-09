@@ -1,5 +1,7 @@
 package models
 
+import "database/sql"
+
 type Wine struct {
 	ID				int 	`json:"id"`
 	Name			string 	`json:"name"`
@@ -11,7 +13,7 @@ type Wine struct {
 	Rating			float32	`json:"rating"`
 	Reviews			[]Review	`json:"reviews"`
 	ReviewCount		int		`json:"review_count"`
-	AverageRating	float32	`json:"average_rating"`
+	AverageRating	sql.NullFloat64	`json:"average_rating"`
 	Type			string 	`json:"type"` // Type refers to cab sav/etc
 	Colour			string 	`json:"colour"` // Red or White
 	ImageURL		string 	`json:"image_url"` // URL to an image of the wine
