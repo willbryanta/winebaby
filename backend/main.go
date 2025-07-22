@@ -23,6 +23,7 @@ func connectDB() (*sql.DB, error){
 	os.Getenv("DB_PORT") + "/" +
 	os.Getenv("DB_NAME") + "?sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
+	log.Println("Connecting to database with connection string:", connStr)
 	if err != nil {
 		log.Fatal("Error opening database: ", err)
 		return nil, err
@@ -30,7 +31,7 @@ func connectDB() (*sql.DB, error){
 
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
-	
+
 	return db, nil
 }
 
