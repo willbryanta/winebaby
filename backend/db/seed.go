@@ -17,7 +17,6 @@ type review struct {
 }
 
 type wine struct {
-	id             int
 	name           string
 	year           int
 	manufacturer   string
@@ -34,7 +33,6 @@ type wine struct {
 }
 
 type user struct {
-	id       int
 	username string
 	email    *string
 	password string
@@ -140,38 +138,37 @@ func Seed(db *sql.DB) error {
 
 	users := []user{
 		{
-			id:       1,
 			username: "user1",
 			email:    stringPtr("user1@example.com"),
 			password: "hashed_password_1", 
 		},
 		{
-			id:       2,
 			username: "user2",
 			email:    stringPtr("user2@example.com"),
 			password: "hashed_password_2",
 		},
 		{
-			id:       3,
 			username: "user3",
 			email:    nil,
 			password: "hashed_password_3",
 		},
 	}
 
-	for _, u := range users {
-		_, err := userStmt.Exec(
-			u.id, u.username, u.email, u.password,
-		)
+	userIDs := make(map[int]int)
+	for i, u := range users {
+		var id int
+		err := userStmt.QueryRow(
+			u.username, u.email, u.password,
+		).Scan(&id)
 		if err != nil {
 			log.Printf("Error inserting user %s: %v", u.username, err)
 			return err
 		}
+		userIDs[i + 1] = id
 	}
 
 	wines := []wine{
 		{
-			id:             1,
 			name:           "Château Lafite Rothschild",
 			year:           2019,
 			manufacturer:   "Domaines Barons de Rothschild",
@@ -187,7 +184,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             2,
 			name:           "Screaming Eagle Sauvignon Blanc",
 			year:           2021,
 			manufacturer:   "Screaming Eagle",
@@ -203,7 +199,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             3,
 			name:           "Penfolds Grange",
 			year:           2017,
 			manufacturer:   "Penfolds",
@@ -219,7 +214,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             4,
 			name:           "Dom Pérignon Vintage",
 			year:           2012,
 			manufacturer:   "Moët & Chandon",
@@ -235,7 +229,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             5,
 			name:           "Cloudy Bay Chardonnay",
 			year:           2022,
 			manufacturer:   "Cloudy Bay Vineyards",
@@ -251,7 +244,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             6,
 			name:           "Opus One",
 			year:           2018,
 			manufacturer:   "Opus One Winery",
@@ -267,7 +259,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             7,
 			name:           "Château Margaux",
 			year:           2016,
 			manufacturer:   "Château Margaux",
@@ -283,7 +274,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             8,
 			name:           "Sassicaia",
 			year:           2019,
 			manufacturer:   "Tenuta San Guido",
@@ -299,7 +289,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             9,
 			name:           "Kim Crawford Sauvignon Blanc",
 			year:           2023,
 			manufacturer:   "Kim Crawford Wines",
@@ -315,7 +304,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             10,
 			name:           "Vega Sicilia Unico",
 			year:           2015,
 			manufacturer:   "Vega Sicilia",
@@ -331,7 +319,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             11,
 			name:           "Rombauer Chardonnay",
 			year:           2022,
 			manufacturer:   "Rombauer Vineyards",
@@ -347,7 +334,6 @@ func Seed(db *sql.DB) error {
 			reviews:        []review{},
 		},
 		{
-			id:             12,
 			name:           "Château d'Yquem",
 			year:           2018,
 			manufacturer:   "Château d'Yquem",
@@ -364,11 +350,24 @@ func Seed(db *sql.DB) error {
 		},
 	}
 
+	wineIDs := make(map[int]int)
+	for i, w := range wines {
+		var id int
+		err := wineStmt.QueryRow(
+			i+1, w.name, w.year, w.manufacturer, w.region, w.alcoholContent,
+			w.price, w.rating, w.typ, w.colour, w.image_url, w.reviewCount, w.averageRating,
+		).Scan(&id)
+		if err != nil {
+			log.Printf("Error inserting wine %s: %v", w.name, err)
+			return err
+		}
+		wineIDs[i+1] = id
+	}
+
 	reviews := []review{
-		{
-			id:             1,
-			userID:         1,
-			wineID:         1,
+		{       
+			userID:         userIDs[1],
+			wineID:         wineIDs[1],
 			content:        "Exquisite balance of fruit and tannins, a true masterpiece.",
 			reviewDate:     "2024-05-10",
 			reviewDateTime: "2024-05-10T10:30:00Z",
@@ -376,9 +375,9 @@ func Seed(db *sql.DB) error {
 			rating:         5,
 		},
 		{
-			id:             2,
-			userID:         2,
-			wineID:         1,
+
+			userID:         userIDs[2],
+			wineID:         wineIDs[1],
 			content:        "Very refined, but needs more time to mature.",
 			reviewDate:     "2024-06-01",
 			reviewDateTime: "2024-06-01T15:45:00Z",
@@ -386,9 +385,8 @@ func Seed(db *sql.DB) error {
 			rating:         4,
 		},
 		{
-			id:             3,
-			userID:         2,
-			wineID:         2,
+			userID:         userIDs[2],
+			wineID:         wineIDs[2],
 			content:        "Crisp and vibrant, perfect for a summer evening.",
 			reviewDate:     "2024-07-15",
 			reviewDateTime: "2024-07-15T18:20:00Z",
@@ -396,9 +394,8 @@ func Seed(db *sql.DB) error {
 			rating:         4,
 		},
 		{
-			id:             4,
-			userID:         1,
-			wineID:         3,
+			userID:         userIDs[1],
+			wineID:         wineIDs[3],
 			content:        "Bold and complex, with a long finish.",
 			reviewDate:     "2024-08-20",
 			reviewDateTime: "2024-08-20T09:00:00Z",
@@ -406,9 +403,8 @@ func Seed(db *sql.DB) error {
 			rating:         5,
 		},
 		{
-			id:             5,
-			userID:         3,
-			wineID:         3,
+			userID:         userIDs[3],
+			wineID:         wineIDs[3],
 			content:        "Too intense for my taste, but well-crafted.",
 			reviewDate:     "2024-09-05",
 			reviewDateTime: "2024-09-05T14:10:00Z",
@@ -416,9 +412,8 @@ func Seed(db *sql.DB) error {
 			rating:         3,
 		},
 		{
-			id:             6,
-			userID:         3,
-			wineID:         6,
+			userID:         userIDs[3],
+			wineID:         wineIDs[6],
 			content:        "Rich and velvety, with deep fruit flavors.",
 			reviewDate:     "2024-10-01",
 			reviewDateTime: "2024-10-01T12:00:00Z",
@@ -426,36 +421,14 @@ func Seed(db *sql.DB) error {
 			rating:         5,
 		},
 		{
-			id:             7,
-			userID:         3,
-			wineID:         6,
+			userID:         userIDs[3],
+			wineID:         wineIDs[6],
 			content:        "Well-balanced but slightly overpriced.",
 			reviewDate:     "2024-10-15",
 			reviewDateTime: "2024-10-15T09:30:00Z",
 			title:          "Solid but Pricey",
 			rating:         4,
 		},
-	}
-
-	for _, u := range users {
-		_, err := userStmt.Exec(
-			u.id, u.username, u.email, u.password,
-		)
-		if err != nil {
-			log.Printf("Error inserting user %s: %v", u.username, err)
-			return err
-		}
-	}
-
-	for _, w := range wines {
-		_, err := wineStmt.Exec(
-			w.id, w.name, w.year, w.manufacturer, w.region, w.alcoholContent,
-			w.price, w.rating, w.typ, w.colour, w.image_url, w.reviewCount, w.averageRating,
-		)
-		if err != nil {
-			log.Printf("Error inserting wine %s: %v", w.name, err)
-			return err
-		}
 	}
 
 	for _, r := range reviews {
@@ -474,4 +447,4 @@ func Seed(db *sql.DB) error {
 
 	log.Println("Database seeded successfully with users, wines, and reviews")
 	return nil
-}
+	}
