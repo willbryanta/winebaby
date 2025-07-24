@@ -27,10 +27,17 @@ type wine struct {
 	rating         float32
 	typ            string
 	colour         string
-	image_url       string
+	image_url      string
 	reviewCount    int
 	averageRating  sql.NullFloat64
 	reviews        []review
+}
+
+type user struct {
+	id       int
+	username string
+	email    *string
+	password string
 }
 
 func Seed(db *sql.DB) error {
@@ -39,6 +46,17 @@ func Seed(db *sql.DB) error {
 		return err
 	}
 	defer tx.Rollback()
+
+	userStmt, err := tx.Prepare(`
+		INSERT INTO users (
+			id, username, email, password
+		) VALUES ($1, $2, $3, $4)
+		ON CONFLICT DO NOTHING
+	`)
+	if err != nil {
+		return err
+	}
+	defer userStmt.Close()
 
 	wineStmt, err := tx.Prepare(`
 		INSERT INTO wines (
@@ -63,6 +81,37 @@ func Seed(db *sql.DB) error {
 	}
 	defer reviewStmt.Close()
 
+	users := []user{
+		{
+			id:       1,
+			username: "user1",
+			email:    stringPtr("user1@example.com"),
+			password: "hashed_password_1", 
+		},
+		{
+			id:       2,
+			username: "user2",
+			email:    stringPtr("user2@example.com"),
+			password: "hashed_password_2",
+		},
+		{
+			id:       3,
+			username: "user3",
+			email:    nil,
+			password: "hashed_password_3",
+		},
+	}
+
+	for _, u := range users {
+		_, err := userStmt.Exec(
+			u.id, u.username, u.email, u.password,
+		)
+		if err != nil {
+			log.Printf("Error inserting user %s: %v", u.username, err)
+			return err
+		}
+	}
+
 	wines := []wine{
 		{
 			id:             1,
@@ -75,7 +124,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.5,
 			typ:            "Cabernet Sauvignon",
 			colour:         "Red",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/73984-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/73984-1.png?impolicy=PROD_SM",
 			reviewCount:    2,
 			averageRating:  sql.NullFloat64{Float64: 4.5, Valid: true},
 			reviews:        []review{},
@@ -91,7 +140,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.0,
 			typ:            "Sauvignon Blanc",
 			colour:         "White",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/259651-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/259651-1.png?impolicy=PROD_SM",
 			reviewCount:    1,
 			averageRating:  sql.NullFloat64{Float64: 4.0, Valid: true},
 			reviews:        []review{},
@@ -107,7 +156,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.0,
 			typ:            "Shiraz",
 			colour:         "Red",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/261083-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/261083-1.png?impolicy=PROD_SM",
 			reviewCount:    2,
 			averageRating:  sql.NullFloat64{Float64: 4.0, Valid: true},
 			reviews:        []review{},
@@ -123,7 +172,7 @@ func Seed(db *sql.DB) error {
 			rating:         0.0,
 			typ:            "Champagne",
 			colour:         "Sparkling",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/6699-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/6699-1.png?impolicy=PROD_SM",
 			reviewCount:    0,
 			averageRating:  sql.NullFloat64{Valid: false},
 			reviews:        []review{},
@@ -139,7 +188,7 @@ func Seed(db *sql.DB) error {
 			rating:         0.0,
 			typ:            "Chardonnay",
 			colour:         "White",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/462559-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/462559-1.png?impolicy=PROD_SM",
 			reviewCount:    0,
 			averageRating:  sql.NullFloat64{Valid: false},
 			reviews:        []review{},
@@ -155,7 +204,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.5,
 			typ:            "Cabernet Sauvignon Blend",
 			colour:         "Red",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/741918-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/741918-1.png?impolicy=PROD_SM",
 			reviewCount:    2,
 			averageRating:  sql.NullFloat64{Float64: 4.5, Valid: true},
 			reviews:        []review{},
@@ -171,7 +220,7 @@ func Seed(db *sql.DB) error {
 			rating:         5.0,
 			typ:            "Cabernet Sauvignon",
 			colour:         "Red",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/686166-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/686166-1.png?impolicy=PROD_SM",
 			reviewCount:    1,
 			averageRating:  sql.NullFloat64{Float64: 5.0, Valid: true},
 			reviews:        []review{},
@@ -187,7 +236,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.0,
 			typ:            "Cabernet Sauvignon Blend",
 			colour:         "Red",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/29480-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/29480-1.png?impolicy=PROD_SM",
 			reviewCount:    2,
 			averageRating:  sql.NullFloat64{Float64: 4.0, Valid: true},
 			reviews:        []review{},
@@ -203,7 +252,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.0,
 			typ:            "Sauvignon Blanc",
 			colour:         "White",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/608178-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/608178-1.png?impolicy=PROD_SM",
 			reviewCount:    1,
 			averageRating:  sql.NullFloat64{Float64: 4.0, Valid: true},
 			reviews:        []review{},
@@ -219,7 +268,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.7,
 			typ:            "Tempranillo",
 			colour:         "Red",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/907928-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/907928-1.png?impolicy=PROD_SM",
 			reviewCount:    3,
 			averageRating:  sql.NullFloat64{Float64: 4.7, Valid: true},
 			reviews:        []review{},
@@ -235,7 +284,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.0,
 			typ:            "Chardonnay",
 			colour:         "White",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/260252-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/260252-1.png?impolicy=PROD_SM",
 			reviewCount:    1,
 			averageRating:  sql.NullFloat64{Float64: 4.0, Valid: true},
 			reviews:        []review{},
@@ -251,7 +300,7 @@ func Seed(db *sql.DB) error {
 			rating:         4.0,
 			typ:            "Sémillon",
 			colour:         "White",
-			image_url:       "https://media.danmurphys.com.au/dmo/product/793361-1.png?impolicy=PROD_SM",
+			image_url:      "https://media.danmurphys.com.au/dmo/product/793361-1.png?impolicy=PROD_SM",
 			reviewCount:    2,
 			averageRating:  sql.NullFloat64{Float64: 4.0, Valid: true},
 			reviews:        []review{},
@@ -331,6 +380,16 @@ func Seed(db *sql.DB) error {
 		},
 	}
 
+	for _, u := range users {
+		_, err := userStmt.Exec(
+			u.id, u.username, u.email, u.password,
+		)
+		if err != nil {
+			log.Printf("Error inserting user %s: %v", u.username, err)
+			return err
+		}
+	}
+
 	for _, w := range wines {
 		_, err := wineStmt.Exec(
 			w.id, w.name, w.year, w.manufacturer, w.region, w.alcoholContent,
@@ -356,6 +415,9 @@ func Seed(db *sql.DB) error {
 		return err
 	}
 
-	log.Println("Database seeded successfully with wines and reviews")
+	log.Println("Database seeded successfully with users, wines, and reviews")
 	return nil
+}
+func stringPtr(s string) *string {
+	return &s
 }
