@@ -40,12 +40,69 @@ type user struct {
 	password string
 }
 
+func stringPtr(s string) *string {
+	return &s
+}
+
 func Seed(db *sql.DB) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
+
+	_, err = tx.Exec(`
+		DROP TABLE IF EXISTS reviews CASCADE;
+		DROP TABLE IF EXISTS user_favorite_wines CASCADE;
+		DROP TABLE IF EXISTS wines CASCADE;
+		DROP TABLE IF EXISTS users CASCADE;
+	`)
+	if err != nil {
+		log.Println("Error dropping tables:", err)
+		return err
+	}
+	_, err = tx.Exec(`
+		CREATE TABLE users (
+			id SERIAL PRIMARY KEY,
+			username VARCHAR(255) NOT NULL UNIQUE,
+			email VARCHAR(255),
+			password VARCHAR(255) NOT NULL
+		);
+		CREATE TABLE wines (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR(255) NOT NULL,
+			year INT NOT NULL,
+			manufacturer VARCHAR(255) NOT NULL,
+			region VARCHAR(255) NOT NULL,
+			alcohol_content FLOAT NOT NULL,
+			price FLOAT NOT NULL,
+			rating FLOAT NOT NULL,
+			type VARCHAR(50) NOT NULL,
+			colour VARCHAR(50) NOT NULL,
+			image_url VARCHAR(255),
+			review_count INT DEFAULT 0,
+			average_rating FLOAT DEFAULT 0.0
+		);
+		CREATE TABLE reviews (
+			id SERIAL PRIMARY KEY,
+			user_id INT NOT NULL REFERENCES users(id),
+			wine_id INT NOT NULL REFERENCES wines(id),
+			content TEXT NOT NULL,
+			review_date DATE NOT NULL,
+			review_date_time TIMESTAMP NOT NULL,
+			title VARCHAR(255) NOT NULL,
+			rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5)
+		);
+		CREATE TABLE user_favorite_wines (
+			user_id INT NOT NULL REFERENCES users(id),
+			wine_id INT NOT NULL REFERENCES wines(id),
+			PRIMARY KEY (user_id, wine_id)
+		);
+	`)
+	if err != nil {
+		log.Println("Error creating tables:", err)
+		return err
+	}
 
 	userStmt, err := tx.Prepare(`
 		INSERT INTO users (
@@ -417,7 +474,4 @@ func Seed(db *sql.DB) error {
 
 	log.Println("Database seeded successfully with users, wines, and reviews")
 	return nil
-}
-func stringPtr(s string) *string {
-	return &s
 }
