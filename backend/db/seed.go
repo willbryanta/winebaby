@@ -79,7 +79,8 @@ func Seed(db *sql.DB) error {
 			colour VARCHAR(50) NOT NULL,
 			image_url VARCHAR(255),
 			review_count INT DEFAULT 0,
-			average_rating FLOAT DEFAULT 0.0
+			average_rating FLOAT DEFAULT 0.0,
+			reviews JSONB DEFAULT '[]' NOT NULL
 		);
 		CREATE TABLE reviews (
 			id SERIAL PRIMARY KEY,
@@ -104,34 +105,37 @@ func Seed(db *sql.DB) error {
 
 	userStmt, err := tx.Prepare(`
 		INSERT INTO users (
-			id, username, email, password
-		) VALUES ($1, $2, $3, $4)
-		ON CONFLICT DO NOTHING
+			username, email, password
+		) VALUES ($1, $2, $3)
+		RETURNING id
 	`)
 	if err != nil {
+		log.Println("Error preparing user statement:", err)
 		return err
 	}
 	defer userStmt.Close()
 
 	wineStmt, err := tx.Prepare(`
 		INSERT INTO wines (
-			id, name, year, manufacturer, region, alcohol_content, price,
-			rating, type, colour, image_url, review_count, average_rating
+			name, year, manufacturer, region, alcohol_content, price,
+			rating, type, colour, image_url, review_count, average_rating, reviews
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-		ON CONFLICT DO NOTHING
+		RETURNING id
 	`)
 	if err != nil {
+		log.Println("Error preparing wine statement:", err)
 		return err
 	}
 	defer wineStmt.Close()
 
 	reviewStmt, err := tx.Prepare(`
 		INSERT INTO reviews (
-			id, user_id, wine_id, content, review_date, review_date_time, title, rating
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-		ON CONFLICT DO NOTHING
+			user_id, wine_id, content, review_date, review_date_time, title, rating
+		) VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id
 	`)
 	if err != nil {
+		log.Println("Error preparing review statement:", err)
 		return err
 	}
 	defer reviewStmt.Close()
