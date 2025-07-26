@@ -7,8 +7,8 @@ import { wines } from "../api/auth/data/mockWineData";
 import { checkSession } from "../api/auth/services/sessionService";
 
 const Dashboard: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const verifySession = async () => {

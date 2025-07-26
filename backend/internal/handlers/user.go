@@ -24,6 +24,7 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
     cookie, err := r.Cookie("token")
+	fmt.Print("Verifying token: ", cookie)
     if err != nil {
         w.WriteHeader(http.StatusUnauthorized)
         json.NewEncoder(w).Encode(map[string]any{

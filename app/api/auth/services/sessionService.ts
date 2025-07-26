@@ -7,6 +7,7 @@ export const checkSession = async (): Promise<{
 }> => {
   try {
     const res = await verifyToken();
+    console.log("Session check response:", res);
     if (!res) {
       return { isAuthenticated: false };
     }

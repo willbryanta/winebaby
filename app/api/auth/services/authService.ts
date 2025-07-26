@@ -2,14 +2,12 @@
 
 import { SignInResponse } from "../types/page";
 
-const BACKEND_URL = "http://localhost:8080";
-
 export const verifyToken = async (): Promise<{
   isAuthenticated: boolean;
   username?: string;
 }> => {
   try {
-    const response = await fetch(`${BACKEND_URL}/verify-token`, {
+    const response = await fetch("http://localhost:8080/verify-token", {
       method: "GET",
       credentials: "include",
     });
@@ -17,6 +15,7 @@ export const verifyToken = async (): Promise<{
       return { isAuthenticated: false };
     }
     const data = await response.json();
+    console.log("Token verification response:", data);
     if (!data || typeof data.isAuthenticated !== "boolean") {
       return { isAuthenticated: false };
     }
@@ -42,7 +41,7 @@ export const signin = async (
   }
 
   try {
-    const response = await fetch("/signin", {
+    const response = await fetch("http://localhost:8080/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +79,7 @@ export const signout = async (): Promise<{
   error?: string;
 }> => {
   try {
-    const response = await fetch(`${BACKEND_URL}/signout`, {
+    const response = await fetch("http://localhost:8080/signout", {
       method: "POST",
       credentials: "include",
     });
@@ -109,7 +108,7 @@ export const signup = async (
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/signup`, {
+    const response = await fetch("http://localhost:8080/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -152,7 +151,7 @@ export const changePassword = async (
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/users/profile`, {
+    const response = await fetch("http://localhost:8080/users/profile", {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -179,7 +178,7 @@ export const changeUsername = async (
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/users/profile`, {
+    const response = await fetch("http://localhost:8080/users/profile", {
       method: "PUT",
       credentials: "include", // Maintains session cookies
       headers: {
