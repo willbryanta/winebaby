@@ -9,12 +9,14 @@ import { checkSession } from "../api/auth/services/sessionService";
 const Dashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [username, setUsername] = useState<string>("");
 
   useEffect(() => {
     const verifySession = async () => {
       try {
         const session = await checkSession();
         setIsAuthenticated(!!session);
+        setUsername(session?.username || "");
       } catch {
         setIsAuthenticated(false);
       } finally {
@@ -39,7 +41,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col w-screen h-screen bg-gray-100 overflow-hidden">
-      <NavBar isAuth={isAuthenticated} />
+      <NavBar isAuth={isAuthenticated} username={username} />
       <WineCard wines={wines} />
     </div>
   );
