@@ -3,21 +3,18 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signout } from "../auth/services/authService";
-import { NavBarProps } from "../auth/types/page";
-import { useState } from "react";
+import { useAuth } from "@/app/context/AuthContext";
 
-export default function NavBar({ isAuth = false, username = "" }: NavBarProps) {
+export default function NavBar() {
   const router = useRouter();
-  const [isAuthenticated, setAuthenticated] = useState(isAuth);
+  const { isAuthenticated, username } = useAuth();
 
   const handleSignOut = async () => {
     const { success, error } = await signout();
     if (success) {
-      setAuthenticated(false);
       router.push("/");
       router.refresh();
     } else {
-      setAuthenticated(true);
       console.error("Sign out failed:", error);
     }
   };

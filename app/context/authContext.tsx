@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { checkSession } from "../services/sessionService";
+import { checkSession } from "../api/auth/services/sessionService";
 
 interface AuthContextType {
   isAuthenticated: boolean;
