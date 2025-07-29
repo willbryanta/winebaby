@@ -35,7 +35,6 @@ func GetReviews(r *MainRepository) ([]models.Review, error){
 	return reviews, nil
 }
 
-// Get a review by ID
 func GetReviewById(r *MainRepository, id int) (models.Review, error) {
 	query := `SELECT id, user_id, wine_id, comment, review_date, review_date_time, review_date_time_utc, title, description, rating 
               FROM reviews WHERE id = $1`

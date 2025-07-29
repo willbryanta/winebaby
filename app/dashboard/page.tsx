@@ -17,6 +17,7 @@ const Dashboard: React.FC = () => {
         const session = await checkSession();
         setIsAuthenticated(!!session);
         setUsername(session?.username || "");
+        console.log("Session verified:", session);
       } catch {
         setIsAuthenticated(false);
       } finally {
@@ -24,6 +25,7 @@ const Dashboard: React.FC = () => {
       }
     };
     verifySession();
+    console.log("Verify session: ", isAuthenticated, username);
   }, []);
 
   if (isLoading) {
