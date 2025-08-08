@@ -4,7 +4,7 @@ import React from "react";
 import NavBar from "@/app/api/components/NavBar";
 import WineCard from "../api/components/WineCard";
 import { wines } from "../api/auth/data/mockWineData";
-import { useAuth } from "@/app/context/AuthContext";
+import { useAuth } from "@/app/context/authContext";
 
 const Dashboard: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();

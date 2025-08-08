@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signout } from "../auth/services/authService";
-import { useAuth } from "@/app/context/AuthContext";
+import { useAuth } from "@/app/context/authContext";
 
 export default function NavBar() {
   const router = useRouter();
