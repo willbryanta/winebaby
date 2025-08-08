@@ -7,7 +7,15 @@ import { useAuth } from "@/app/context/authContext";
 
 export default function NavBar() {
   const router = useRouter();
-  const { isAuthenticated, username } = useAuth();
+  const { isAuthenticated, username, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
+  }
 
   const handleSignOut = async () => {
     const { success, error } = await signout();
@@ -18,6 +26,8 @@ export default function NavBar() {
       console.error("Sign out failed:", error);
     }
   };
+
+  console.log("NavBar rendered with isAuthenticated:", isAuthenticated);
 
   return (
     <nav className="bg-wine dark:bg-wine-dark text-white p-4 shadow-md">

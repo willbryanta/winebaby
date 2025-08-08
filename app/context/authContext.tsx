@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const verifySession = async () => {
       try {
         const session = await checkSession();
-        setIsAuthenticated(!!session);
+        setIsAuthenticated(session?.isAuthenticated || false);
         setUsername(session?.username || "");
       } catch {
         setIsAuthenticated(false);
